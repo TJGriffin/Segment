@@ -1,0 +1,26 @@
+<template>
+
+          <div class="slds-page-header__col-title">
+
+            <div class="slds-media">
+                <template if:true={iconName}>
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name={iconName} size="medium"></lightning-icon>
+                    </div>
+                </template>
+              <div class="slds-media__body">
+                <div class="slds-page-header__name">
+                  <div class="slds-page-header__name-title">
+                    <h1>
+                      <span class="slds-page-header__title slds-truncate" title={title}>{title}</span>
+                    </h1>
+                  </div>
+                </div>
+                <template if:true={footer}>
+                    <p class="slds-page-header__name-meta">{footer}</p>
+                </template>
+              </div>
+            </div>
+
+            </div>
+</template>

@@ -1,0 +1,43 @@
+<template>
+    <div class={classList}>
+        <article class="slds-tile">
+            <h3 class="slds-tile__title slds-truncate slds-m-bottom_x-small" title={header}>
+                <strong>{typeLabel}</strong>
+                <!--<a href={gift.link}>{header}</a>-->
+            </h3>
+            <div class="slds-tile__detail">
+                <h2 class="slds-text-title_caps slds-m-bottom_x-small">
+                    <a href={gift.link} class={theme}>{gift.Name}</a>
+
+                </h2>
+                <h2 class="slds-text-heading_medium slds-m-bottom_x-small">
+                    <template if:true={gift.isSoftCredit}>
+                        <lightning-formatted-number value={gift.totalAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;soft credited
+                    </template>
+                    <template if:false={gift.isSoftCredit}>
+                        <lightning-formatted-number value={gift.totalAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;received 
+                    </template>
+                    <template if:true={amountDifference}>
+                        &nbsp;from a&nbsp;<lightning-formatted-number value={gift.oppAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;gift
+                    </template>
+                </h2>
+                <p class={titleTheme}>
+                    <lightning-formatted-date-time class={theme} month="2-digit" day="2-digit" year="numeric" value={gift.closeDate}></lightning-formatted-date-time>
+                </p>
+                <p class={theme}>
+                    {gift.campaignName}
+                </p>
+                <div class="footer slds-m-top_small">
+                    <p class={theme}>
+                        <template if:true={showType}>
+                            <lightning-badge label={gift.recordType} class={badgeClass}></lightning-badge>
+                        </template>
+                        <template if:true={gift.isSoftCredit}>
+                            <lightning-badge label="Soft Credit" class={badgeClass}></lightning-badge>
+                        </template>
+                    </p>
+                </div>
+            </div>
+        </article>
+    </div>
+</template>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_Anniversary__c</fullName>
+    <externalId>false</externalId>
+    <formula>OR(
+ OR(
+   AND(Mid_Level_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-15), Mid_Level_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-15)),
+   AND(Mid_Level_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-36), Mid_Level_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-36))
+   ),
+ OR(
+   AND(Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-15), Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-15)),
+   AND(Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-36), Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-36))
+   ),
+ OR(
+   AND(Major_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-15), Major_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-15)),
+   AND(Major_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY()-2,-36), Major_Donor_Status_Applied_Date__c &gt;= ADDMONTHS(TODAY(),-36))
+   )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Status Anniversary</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

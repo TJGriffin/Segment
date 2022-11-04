@@ -1,0 +1,10 @@
+<template>
+    <lightning-tabset variant="vertical">
+        <lightning-tab label="Annual Giving Summary">
+            <c-acc-annual-giving-history record-id={recordId}></c-acc-annual-giving-history>
+        </lightning-tab>
+        <lightning-tab label="Detailed Gift History">
+            <c-acc-giving record-id={recordId}></c-acc-giving>
+        </lightning-tab>
+    </lightning-tabset>
+</template>

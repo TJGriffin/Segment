@@ -1,0 +1,24 @@
+<template>
+    <template if:true={account}>
+        <lightning-layout>
+            <lightning-layout-item padding="around-small">
+                <template if:true={levelName}>
+                    <lightning-badge label={levelName} class="slds-theme_success"></lightning-badge>
+                </template>
+                <template if:true={iwhcDonor}>
+                    <lightning-badge label="IWHC Donor" class="slds-theme_info"></lightning-badge>
+                </template>
+                <template if:true={changeDonor}>
+                    <lightning-badge label="Change Donor" class="slds-theme_warning"></lightning-badge>
+                </template>      
+            </lightning-layout-item>
+            <template if:true={labels}>
+                <template for:each={labels} for:item="label">
+                    <lightning-layout-item padding="around-small" key={label}>
+                        <c-con-badge label={label} ></c-con-badge>
+                    </lightning-layout-item>
+                </template>
+            </template>  
+        </lightning-layout>
+    </template>
+</template>

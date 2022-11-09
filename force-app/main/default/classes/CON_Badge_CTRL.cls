@@ -59,10 +59,10 @@ public with sharing class CON_Badge_CTRL {
             WHERE npe5__Contact__c IN:contactIds
             AND Contact_Role__c IN:roles]){
                 if(aff.npe5__Status__c == 'Former'
-                    && !labelStatus.containsKey(aff.Contact_Role__c)) {
-                        labelStatus.put(aff.Contact_Role__c, aff.npe5__Status__c);
+                    && !labelStatus.containsKey(aff.trac_Role__c)) {
+                        labelStatus.put(aff.trac_Role__c, aff.npe5__Status__c);
                     } else {
-                        labelStatus.put(aff.Contact_Role__c, aff.npe5__Status__c);
+                        labelStatus.put(aff.trac_Role__c, aff.npe5__Status__c);
                     }
             }
         Set<String> labels = new Set<String>();

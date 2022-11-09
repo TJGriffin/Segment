@@ -378,7 +378,6 @@ public with sharing class ACC_Giving_SVC {
 			isClosed,
 			npe03__Recurring_Donation__c,
 			npe03__Recurring_Donation__r.Name,
-			npe03__Recurring_Donation__r.Status__c,
 			npe03__Recurring_Donation__r.npsp__Status__c,
 			npe01__Amount_Outstanding__c,
 			CampaignId,
@@ -660,7 +659,6 @@ public with sharing class ACC_Giving_SVC {
         soql+=' isClosed,'; 
         soql+=' npe03__Recurring_Donation__c,'; 
         soql+=' npe03__Recurring_Donation__r.Name,'; 
-        soql+=' npe03__Recurring_Donation__r.Status__c,'; 
         soql+=' npe03__Recurring_Donation__r.npsp__Status__c,'; 
         soql+=' npe01__Amount_Outstanding__c,'; 
         soql+=' CampaignId,'; 

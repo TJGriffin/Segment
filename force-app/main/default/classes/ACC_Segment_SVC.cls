@@ -600,28 +600,28 @@ public with sharing class ACC_Segment_SVC {
         get {
             return new Map<String, Map<Integer, Decimal>>{
                 'Active Major Donor' => new Map<Integer, Decimal>{
-                    15 => 10000.0
+                    12 => 25000.0
                 },
                 'Active Mid Level Donor' => new Map<Integer, Decimal>{
-                    15 => 1000.0
+                    12 => 1000.0
                 },
                 'Active Sustainer' => new Map<Integer, Decimal>{
                     90 => .01
                 },
                 'Active Donor' => new Map<Integer, Decimal>{
-                    15 => .01
+                    12 => .01
                 },
                 'Lapsed Major Donor' => new Map<Integer, Decimal>{
-                    36 => 10000.0
+                    24 => 10000.0
                 },
                 'Lapsed Mid Level Donor' => new Map<Integer, Decimal>{
-                    36 => 1000.0
+                    24 => 1000.0
                 },
                 'Lapsed Sustainer' => new Map<Integer, Decimal>{
                    0 => .01 
                 },
                 'Lapsed Donor' => new Map<Integer, Decimal>{
-                    36 => .01
+                    24 => .01
                 },
                 'Former Major Donor' => new Map<Integer, Decimal>{
                     0 => 10000.0

@@ -18,7 +18,7 @@ private class ACC_Giving_TEST {
             npe03__Date_Established__c = Date.Today().addYears(-1),
             npe03__Open_Ended_Status__c = 'Closed',
             npe03__Installments__c = 24,
-            Status__c = 'active'
+            npsp__Status__c = 'Active'
         ));
         rds.add(new npe03__Recurring_Donation__c(
             npe03__Contact__c = cons[7].Id,
@@ -26,7 +26,7 @@ private class ACC_Giving_TEST {
             npe03__Date_Established__c = Date.Today().addYears(-4),
             npe03__Open_Ended_Status__c = 'Closed',
             npe03__Installments__c = 24,
-            Status__c = 'canceled'
+            npsp__Status__c = 'Lapsed'
         ));
 
         insert rds;

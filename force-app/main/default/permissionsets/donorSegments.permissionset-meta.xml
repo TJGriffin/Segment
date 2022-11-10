@@ -33,10 +33,6 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>CON_Sustainer_TDTM</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
         <apexClass>OPP_Segment_TDTM</apexClass>
         <enabled>true</enabled>
     </classAccesses>

@@ -8,9 +8,6 @@ import TOTAL_COUNT from '@salesforce/schema/Contact.Number_of_Combined_Credits__
 import LAST_YEAR_COUNT from '@salesforce/schema/Contact.Number_of_Combined_Credits_Last_Year__c';
 import THIS_YEAR_COUNT from '@salesforce/schema/Contact.Number_of_Combined_Credits_This_Year__c';
 import TWO_YEAR_COUNT from '@salesforce/schema/Contact.Number_of_Combined_Credits_2_Years_Ago__c';
-import ONEK_THIS_YEAR from '@salesforce/schema/Contact.cfg_Num_1K_Gifts_This_Year__c';
-import ONEK_LAST_YEAR from '@salesforce/schema/Contact.cfg_Num_1K_Gifts_Last_Year__c';
-import ONEK_TWO_YEAR from '@salesforce/schema/Contact.cfg_Num_1K_Gifts_Last_2_Yrs__c';
 
 
 export default class conGivingSummary extends LightningElement {
@@ -28,10 +25,7 @@ export default class conGivingSummary extends LightningElement {
                 TOTAL_COUNT,
                 LAST_YEAR_COUNT,
                 THIS_YEAR_COUNT,
-                TWO_YEAR_COUNT,
-                ONEK_THIS_YEAR,
-                ONEK_LAST_YEAR,
-                ONEK_TWO_YEAR
+                TWO_YEAR_COUNT
             ]
         }
     )

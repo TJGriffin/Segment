@@ -22,7 +22,7 @@ public with sharing class UTIL_TestDataFactory_SVC {
         return new npe03__Recurring_Donation__c(
             Name = conId,
             npe03__Contact__c = conId,
-            Status__c = 'active',
+            npsp__Status__c = 'active',
             npe03__Date_Established__c = Date.today().addMonths(-12),
             npe03__Next_Payment_Date__c = Date.today().addDays(30),
             npe03__Amount__c = 100

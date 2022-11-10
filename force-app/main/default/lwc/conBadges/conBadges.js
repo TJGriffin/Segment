@@ -1,7 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import wireGetCustomBadges from '@salesforce/apex/CON_Badge_CTRL.getCustomBadges';
 import { getRecord,getFieldValue } from 'lightning/uiRecordApi';
-import SUSTAINER from '@salesforce/schema/Contact.cfg_Sustaining_Member_Status__c';
 import LEVEL from '@salesforce/schema/Contact.Donor_Segment__c';
 import DECEASED from '@salesforce/schema/Contact.npsp__Deceased__c';
 import DNC from '@salesforce/schema/Contact.npsp__Do_Not_Contact__c';
@@ -16,7 +15,6 @@ export default class ConBadges extends LightningElement {
             recordId:'$recordId', 
             optionalFields: [
                 LEVEL,
-                SUSTAINER,
                 DECEASED,
                 DNC
             ]
@@ -36,9 +34,6 @@ export default class ConBadges extends LightningElement {
     
     get levelName(){
         return getFieldValue(this.contact.data,LEVEL);
-    }
-    get sustainerStatus(){
-        return getFieldValue(this.contact.data,SUSTAINER);
     }
     get deceasedStatus(){
         var deceased;

@@ -49,7 +49,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 	*/ 
     public ACC_Segment_BATCH(){
 		this.isMissing = false;
-		this.mode = ACC_Segment_BATCH.modeType.ACCOUNT;
+		this.mode = modeType.ACCOUNT;
     }
 
 	/*******************************************************************************************************
@@ -57,7 +57,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 	* @param void
 	* @return void
 	*/ 
-    public ACC_Segment_BATCH(ACC_Segment_BATCH.modeType mode){
+    public ACC_Segment_BATCH(modeType mode){
 		this.isMissing = false;
 		this.mode = mode;
     }
@@ -69,14 +69,14 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 	*/ 
     public ACC_Segment_BATCH(Boolean isMissing){
 		this.isMissing = isMissing;
-		this.mode = isMissing ? ACC_Segment_BATCH.modeType.ACCOUNT_ALL : ACC_Segment_BATCH.modeType.ACCOUNT;
+		this.mode = isMissing ? modeType.ACCOUNT_ALL : modeType.ACCOUNT;
     }
 	/*******************************************************************************************************
 	* @description constructor
 	* @param accountIds the set of accountIds
 	* @return void
 	*/
-    public ACC_Segment_BATCH(Set<Id> accountIds, ACC_Segment_BATCH.modeType mode){
+    public ACC_Segment_BATCH(Set<Id> accountIds, modeType mode){
         this.accountIds = accountIds;
 		this.isMissing = false;
 		this.mode = mode;
@@ -87,7 +87,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 	* @param accountIds the set of accountIds
 	* @return void
 	*/
-    public ACC_Segment_BATCH(Set<Id> accountIds, Integer failedCount, ACC_Segment_BATCH.modeType mode){
+    public ACC_Segment_BATCH(Set<Id> accountIds, Integer failedCount, modeType mode){
         this.accountIds = accountIds;
 		this.failedCount = failedCount;
 		this.isMissing = false;
@@ -99,7 +99,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 	* @param accountIds the set of accountIds
 	* @return void
 	*/
-    public ACC_Segment_BATCH(Set<Id> accountIds, Integer failedCount, Boolean isMissing, ACC_Segment_BATCH.modeType mode){
+    public ACC_Segment_BATCH(Set<Id> accountIds, Integer failedCount, Boolean isMissing, modeType mode){
         this.accountIds = accountIds;
 		this.failedCount = failedCount;
 		this.isMissing = isMissing;

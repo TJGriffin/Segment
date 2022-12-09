@@ -11,6 +11,55 @@ public with sharing class ACC_Giving_SVC {
 	* @param recordId
 	* @return Id  
 	********************************************************************************************************/
+    public static Integer currentFiscalYear { 
+        get {
+            if(currentFiscalYear == null){
+                Period cfy = [SELECT FullyQualifiedLabel FROM Period WHERE StartDate <= TODAY AND EndDate >= TODAY AND Type = 'Year' LIMIT 1];
+                Integer fy = Integer.valueOf(cfy.FullyQualifiedLabel.split(' ')[1]);
+                currentFiscalYear = useFiscalYear ? fy : Date.Today().year();
+            } 
+            return currentFiscalYear;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the account id of a record Id
+	* @param recordId
+	* @return Id  
+	********************************************************************************************************/
+    public static Boolean useFiscalYear { 
+        get {
+            if(useFiscalYear == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                useFiscalYear = dss == null ? false : dss.UseFiscalYear__c;
+            }
+            return useFiscalYear;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the account id of a record Id
+	* @param recordId
+	* @return Id  
+	********************************************************************************************************/
+    public static List<String> softCreditRoles { 
+        get {
+           return new List<String>{
+                'Soft Credit',
+                'Influencer',
+                'Matched Donor'
+           };
+        }
+        set;
+    } 
+
+	/*******************************************************************************************************
+	* @description gets the account id of a record Id
+	* @param recordId
+	* @return Id  
+	********************************************************************************************************/
     public static Id getAccountIdFromRecordId(Id recordId){
 		Id accountId;		
 		// determine if current Id is contact
@@ -84,6 +133,7 @@ public with sharing class ACC_Giving_SVC {
 	* @return Map<Id,List<OpportunityContactRole>>
 	********************************************************************************************************/
     public static Map<Id,List<OpportunityContactRole>> getSoftCreditsFromAccountIds(Set<Id> accountIds){
+        List<String> softCreditRoles = softCreditRoles;
         Map<Id, List<OpportunityContactRole>> rolesByAccount = new Map<Id, List<OpportunityContactRole>>();
         String soqlQuery = getSoftCreditSoql();
         soqlQuery+=getSoftCreditWhereClause(accountIds);
@@ -159,6 +209,30 @@ public with sharing class ACC_Giving_SVC {
                 ascByAccount.put(accountId,new List<npsp__Account_Soft_Credit__c>());
         }
         return ascByAccount;
+    }
+	/*******************************************************************************************************
+	* @description retrieves a map of giftitem collections keyed by accountId
+	* @param accountId
+	* @param showWonOnly
+	* @return Map<Id, List<GiftItem>>
+	********************************************************************************************************/
+    public static Map<Id, List<GiftItem>> getGiftItems(Set<Id> accountIds, Boolean showWonOnly, Date effectiveDate) {
+        Map<Id, List<GiftItem>> giftItemMap = getGiftItems(accountIds,showWonOnly);
+        if(effectiveDate == Date.Today())
+            return giftItemMap;
+
+        Map<Id, List<GiftItem>> updatedGiftItemMap = new MAp<Id, List<GiftItem>>();
+        for(Id accountId:giftItemMap.keyset()){
+            List<GiftItem> giftItems = new List<GiftItem>();
+            for(GiftItem gi:giftItemMap.get(accountId)){
+                if(gi.closeDate < effectiveDate)
+                    giftItems.add(gi);
+            }
+            updatedGiftItemMap.put(accountId,giftItems);
+        }
+
+        return updatedGiftItemMap;
+
     }
 	/*******************************************************************************************************
 	* @description retrieves a map of giftitem collections keyed by accountId
@@ -494,7 +568,7 @@ public with sharing class ACC_Giving_SVC {
 		for(Opportunity opp : oppList) {
             accountId = opp.AccountId;
             hardCreditMap.put(opp.Id,opp.Amount);
-			String giftYear = String.valueOf(opp.CloseDate.Year());
+			String giftYear = useFiscalYear ? String.valueOf(opp.FiscalYear) : String.valueOf(opp.CloseDate.Year());
 			if(!giftHistory.containsKey(giftYear)) {
 				AnnualGiftHistory agh = new AnnualGiftHistory(giftYear, 0.0, 0.0, 0.0, 0.0, accountId);
 				oppsByYear.put(giftYear,new Set<Id>());
@@ -518,7 +592,7 @@ public with sharing class ACC_Giving_SVC {
             if(hardCreditMap.containsKey(psc.npsp__Opportunity__c))
                 continue;
                 
-            String giftYear = String.valueOf(psc.npsp__Opportunity__r.CloseDate.Year());
+            String giftYear = useFiscalYear ? String.valueOf(psc.npsp__Opportunity__r.FiscalYear) : String.valueOf(psc.npsp__Opportunity__r.CloseDate.Year());
 			if(!giftHistory.containsKey(giftYear)) {
 				AnnualGiftHistory agh = new AnnualGiftHistory(giftYear, 0.0, 0.0, 0.0, 0.0, accountId);
 				giftHistory.put(giftYear, agh);
@@ -537,7 +611,7 @@ public with sharing class ACC_Giving_SVC {
             if(hardCreditMap.containsKey(ascr.npsp__Opportunity__c))
                 continue;
                 
-            String giftYear = String.valueOf(ascr.npsp__Opportunity__r.CloseDate.Year());
+            String giftYear = useFiscalYear ? String.valueOf(ascr.npsp__Opportunity__r.FiscalYear) : String.valueOf(ascr.npsp__Opportunity__r.CloseDate.Year());
 			if(!giftHistory.containsKey(giftYear)) {
 				AnnualGiftHistory agh = new AnnualGiftHistory(giftYear, 0.0, 0.0, 0.0, 0.0, accountId);
 				giftHistory.put(giftYear, agh);
@@ -558,7 +632,7 @@ public with sharing class ACC_Giving_SVC {
                 continue;
 
 			
-            String giftYear = String.valueOf(crole.Opportunity.CloseDate.Year());
+            String giftYear = useFiscalYear ? String.valueOf(crole.Opportunity.FiscalYear) : String.valueOf(crole.Opportunity.CloseDate.Year());
 			if(!giftHistory.containsKey(giftYear)) {
 				AnnualGiftHistory agh = new AnnualGiftHistory(giftYear, 0.0, 0.0, 0.0, 0.0, accountId);
 				giftHistory.put(giftYear, agh);
@@ -632,10 +706,13 @@ public with sharing class ACC_Giving_SVC {
     public static Set<Id> getAccountIdsFromOpps(List<Opportunity> opps){
         Set<Id> accountIds = new Set<Id>();
         for(Opportunity opp:opps){
-            accountIDs.add(opp.AccountId);
+            if(string.isNotBlank(opp.AccountId))
+                accountIDs.add(opp.AccountId);
+
             if(opp.OpportunityContactRoles != null && opp.OpportunityContactRoles.size()>0){
                 for(OpportunityContactRole ocr:opp.OpportunityContactRoles){
-                    accountIds.add(ocr.Contact.AccountId);
+                    if(String.isNotBlank(ocr.Contact.AccountId))
+                        accountIds.add(ocr.Contact.AccountId);
                 }
             }
         }
@@ -654,6 +731,7 @@ public with sharing class ACC_Giving_SVC {
         soql+=' CloseDate, '; 
         soql+=' Amount,'; 
         soql+=' StageName,'; 
+        soql+=' FiscalYear,'; 
         soql+=' Account.Name,'; 
         soql+=' isWon,'; 
         soql+=' isClosed,'; 
@@ -696,6 +774,7 @@ public with sharing class ACC_Giving_SVC {
         soql+=' Opportunity.Amount,';
         soql+=' Opportunity.CloseDate,';
         soql+=' Opportunity.StageName,';
+        soql+=' Opportunity.FiscalYear,';
         soql+=' Opportunity.Account.Name,';
         soql+=' Opportunity.CampaignId,';
         soql+=' Opportunity.Campaign.Name,';
@@ -720,6 +799,7 @@ public with sharing class ACC_Giving_SVC {
         soql+=' npsp__Opportunity__r.Name,';
         soql+=' npsp__Opportunity__r.CloseDate,';
         soql+=' npsp__Opportunity__r.StageName,';
+        soql+=' npsp__Opportunity__r.FiscalYear,';
         soql+=' npsp__Opportunity__r.IsWon,';
         soql+=' npsp__Opportunity__r.IsClosed,';
         soql+=' npsp__Opportunity__r.Amount,';
@@ -746,6 +826,7 @@ public with sharing class ACC_Giving_SVC {
         soql+=' npsp__Opportunity__r.Name,';
         soql+=' npsp__Opportunity__r.CloseDate,';
         soql+=' npsp__Opportunity__r.StageName,';
+        soql+=' npsp__Opportunity__r.FiscalYear,';
         soql+=' npsp__Opportunity__r.IsWon,';
         soql+=' npsp__Opportunity__r.IsClosed,';
         soql+=' npsp__Amount__c,';
@@ -766,7 +847,7 @@ public with sharing class ACC_Giving_SVC {
     public static String getSoftCreditWhereClause(Set<Id> accountIds){
         String whereClause =' WHERE ';
         whereClause+=' Contact.AccountId IN:accountIds';
-        whereClause+=' AND Role=\'Soft Credit\'';
+        whereClause+=' AND Role IN :softCreditRoles';
         whereClause+=' AND Opportunity.Amount != null';
         whereClause+=' AND Opportunity.Amount != 0';
         whereClause+=' AND (';
@@ -842,7 +923,7 @@ public with sharing class ACC_Giving_SVC {
             soqlQuery+=' (SELECT Id,';
             soqlQuery+=' Contact.AccountId';
             soqlQuery+=' FROM OpportunityContactRoles';
-            soqlQuery+=' WHERE Role=\'Soft Credit\')';
+            soqlQuery+=' WHERE Role IN:softCreditRoles)';
             soqlQuery+=' FROM Opportunity';
         } else {
            soqlQuery+='SELECT Id';

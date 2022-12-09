@@ -6,37 +6,31 @@
 */
 public with sharing class ACC_Segment_SVC {
 
-
-
-    @TestVisible
-    private static Date firstDate {
-        get {
-            return Date.NewInstance(1900,1,1);
-        }   
-        set;
-    }
-    @TestVisible
-    private static Date formerDate {
-        get {
-            return Date.today().addMonths(-36);
+    public Date processDate {
+        get;
+        set {
+            processDate = value;
+            effectiveDate = processDate;
+            firstDate = Date.newInstance(1950,1,1);
+            extendedLapsedDate = value.addMonths(-24);
+            lapsedDate = value.addMonths(-12);
+            deepLapsedDate = value.addMonths(-60);
+            lapsedSustainer = value.addDays(-90);
         }
-        set;
     }
     @TestVisible
-    private static Date lapsedDate {
-        get {
-            return Date.today().addMonths(-15);
-        }
-        set;
-    }
+    private Date effectiveDate;
+    @TestVisible
+    private Date firstDate;
+    @TestVisible
+    private Date extendedLapsedDate;
+    @TestVisible
+    private Date deepLapsedDate;
+    @TestVisible
+    private Date lapsedDate;
 
     @TestVisible
-    private static Date lapsedSustainer {
-        get {
-            return Date.today().addDays(-90);
-        }
-        set;
-    }
+    private Date lapsedSustainer;
 
 
     /****
@@ -59,13 +53,47 @@ public with sharing class ACC_Segment_SVC {
 	* @param accounts
 	********************************************************************************************************/
     public ACC_Segment_SVC(List<Account> accounts){
+        this.processDate = Date.Today();
         ACC_Segment_UTIL.manualOverride = false;
         this.accountMap = new Map<Id, Account>(accounts);
         this.giftItemsByAccount = ACC_Giving_SVC.getGiftItems(this.accountMap.keyset(),true);
         
         this.processSegments();
+        this.updateAccounts();
     }
-	
+
+	/*******************************************************************************************************
+	* @description constructor
+    *       This constructor is used when you want to calculate segments based on a date other than today
+    *       for instance: when looking back at old opportunities
+	* @param accounts
+    * @param effectiveDate
+	********************************************************************************************************/
+    public ACC_Segment_SVC(List<Account> accounts, Date effectiveDate){
+        this.processDate = effectiveDate;
+        ACC_Segment_UTIL.manualOverride = false;
+        this.accountMap = new Map<Id, Account>(accounts);
+        this.giftItemsByAccount = ACC_Giving_SVC.getGiftItems(this.accountMap.keyset(),true, effectiveDate);
+        
+        this.processSegments();
+    }
+    /*******************************************************************************************************
+	* @description processes accounts and contacts on before to set the Donor Segment
+	* @param objs
+    * @return void
+	********************************************************************************************************/
+    public void updateAccounts(){
+        update this.accountMap.values();
+        /*
+        try {
+            update this.accountMap.values();
+        } catch(Exception e){
+            system.debug(e.getMessage());
+            this.failedIds = new Set<Id>();
+            this.failedIds.addAll(this.accountMap.keyset());
+        }
+        */
+    }	
     /*******************************************************************************************************
 	* @description processes accounts and contacts on before to set the Donor Segment
 	* @param objs
@@ -112,10 +140,11 @@ public with sharing class ACC_Segment_SVC {
 	********************************************************************************************************/
     public static String calculateDonorSegment(SObject obj){
         String donorSegment;
-        String majStatus = (String) obj.get('Major_Donor_Status__c');
-        String midStatus = (String) obj.get('Mid_Level_Donor_Status__c');
-        String susStatus = (String) obj.get('Sustainer_Status__c');
-        String donStatus = (String) obj.get('Donor_Status__c');
+        String majStatus = obj.isSet('Major_Donor_Status__c') ? (String) obj.get('Major_Donor_Status__c') : null;
+        String midStatus = obj.isSet('Mid_Level_Donor_Status__c') ? (String) obj.get('Mid_Level_Donor_Status__c') : null;
+        //String susStatus = (String) obj.get('Sustainer_Status__c');
+        String susStatus = null;
+        String donStatus = obj.isSet('Donor_Status__c') ? (String) obj.get('Donor_Status__c') : null;
         if(String.isBlank(majStatus) && String.isBlank(midStatus) && String.isBlank(susStatus) && String.isBlank(donStatus))
             return donorSegment;
         // build donor segment by evaluating up the heirarchy
@@ -132,6 +161,7 @@ public with sharing class ACC_Segment_SVC {
             } else {
                 donorSegment = getLowerLevelStatusIsGreater(midStatus,majStatus) ? getDonorSegmentFromFieldValue('Mid_Level_Donor_Status__c',midStatus) : getDonorSegmentFromFieldValue('Major_Donor_Status__c',majStatus);
             }
+
         } else if(getLowerLevelStatusIsGreater(susStatus,midStatus)){
             donorSegment = getLowerLevelStatusIsGreater(susStatus,majStatus) ? getDonorSegmentFromFieldValue('Sustainer_Status__c',susStatus) : getDonorSegmentFromFieldValue('Major_Donor_Status__c',majStatus);
         } else {
@@ -159,7 +189,13 @@ public with sharing class ACC_Segment_SVC {
         if(lowerLevelStatus == 'Active' || lowerLevelStatus == 'Prospect')
             return true;
         
-        if(lowerLevelStatus == 'Lapsed' && higherLevelStatus == 'Former')
+        if(lowerLevelStatus == 'Lapsed' && higherLevelStatus == 'Extended Lapsed')
+            return true;
+
+        if(lowerLevelStatus == 'Lapsed' && higherLevelStatus == 'Deep Lapsed')
+            return true;
+
+        if(lowerLevelStatus == 'Extended Lapsed' && higherLevelStatus == 'Deep Lapsed')
             return true;
         
         return lowerLevelStatusIsGreater;
@@ -246,7 +282,7 @@ public with sharing class ACC_Segment_SVC {
     public void processSegments(){
         ACC_Giving_CTRL.sortOrder = 'ASC';
         Map<Id,Account> updatedAccounts = new Map<Id, Account>();
-
+        system.debug(this.giftItemsByAccount.keyset());
         for(Id accountId:this.accountMap.keyset()){
             
             Boolean isSustainer = false;
@@ -281,14 +317,6 @@ public with sharing class ACC_Segment_SVC {
             
         }
         this.accountMap.putAll(updatedAccounts);
-
-        try {
-            update this.accountMap.values();
-        } catch(Exception e){
-            system.debug(e.getMessage());
-            this.failedIds = new Set<Id>();
-            this.failedIds.addAll(this.accountMap.keyset());
-        }
     }
 	/*******************************************************************************************************
 	* @description calculates rollup values for soft credits
@@ -310,11 +338,15 @@ public with sharing class ACC_Segment_SVC {
         Decimal softCreditsLY;
         Decimal softCredits2Y;
         Boolean hasSoftCredits = false;
+        Integer currentFY = ACC_Giving_SVC.currentFiscalYear;
 
         for(giftItem gi:giftItems){  
             Decimal amount = gi.softCreditAmount;
             Boolean isSoft = gi.isSoftCredit == null ? false : gi.isSoftCredit;
             isSoft = isSoft && amount > 0;
+            Integer closeYear = gi.FiscalYear;
+            if(closeYear==null)
+                continue;
             if(isSoft){
                 hasSoftCredits = true;
                 numSoftCredits = numSoftCredits == null ? 0 : numSoftCredits;
@@ -332,13 +364,13 @@ public with sharing class ACC_Segment_SVC {
                     firstSoftCreditAmount = amount;
                     firstSoftCreditDate = gi.closeDate;
                 }
-                if(gi.closeDate != null && gi.closeDate.year() == Date.Today().year()){
+                if(closeYear  == currentFY){
                     numSoftCreditsTY++;
                     softCreditsTY = softCreditsTY == null ? amount : softCreditsTY + amount;
-                } else if(gi.closeDate != null && gi.closeDate.year() == Date.Today().addYears(-1).year()){
+                } else if(closeYear == (currentFY - 1)){
                     numSoftCreditsLY++;
                     softCreditsLY = softCreditsLY == null ? amount : softCreditsLY + amount;
-                } else if(gi.closeDate != null && gi.closeDate.year() == Date.Today().addYears(-2).year()){
+                } else if(closeYear  == (currentFy - 2)){
                     numSoftCredits2Y++;
                     softCredits2Y = softCredits2Y == null ? amount : softCredits2Y + amount;
                 }
@@ -375,7 +407,8 @@ public with sharing class ACC_Segment_SVC {
     public Map<String, GivingLevel> getGivingLevelFromThresholds(Map<Date, Decimal> thresholdAmounts){
         Map<String, GivingLevel> givingLevels = new Map<String, GivingLevel>();
         List<Date> dates = new List<Date>();
-        dates.addAll(this.givingLevelByDateAndAmount.keyset());
+        Map<Date, Map<Decimal, givingLevel>> givingLevelByDateAndAmount =  getGivingLevelByDateAndAmount(firstDate,effectiveDate);
+        dates.addAll(givingLevelByDateAndAmount.keyset());
         dates.sort();
         for(Date dt:dates){
             Decimal donorAmount = thresholdAmounts.containsKey(dt) ? thresholdAmounts.get(dt) : 0;
@@ -399,7 +432,8 @@ public with sharing class ACC_Segment_SVC {
     public Map<Date, Decimal> getThresholdAmounts(List<GiftItem> giftItems){
         Map<Date, Decimal> amountByDate = new Map<Date, Decimal>();
         amountByDate.put(firstDate,0);
-        amountByDate.put(formerDate,0);
+        amountByDate.put(deepLapsedDate,0);
+        amountByDate.put(extendedLapsedDate,0);
         amountByDate.put(lapsedDate,0);
         for(GiftItem giftItem:giftItems){
             Date giftDate = giftItem.lastReceivedDate == null ? giftItem.closeDate : giftItem.lastReceivedDate;
@@ -407,10 +441,12 @@ public with sharing class ACC_Segment_SVC {
             if(giftAmount == 0 || giftAmount == null || giftDate == null)
                 continue;
 
-            if(giftDate >= firstDate && giftDate < formerDate){
+            if(giftDate >= firstDate && giftDate <deepLapsedDate){
                 amountByDate.put(firstDate,amountByDate.get(firstDate)+giftAmount);
-            } else if(giftDate >= formerDate && giftDate < lapsedDate){
-                amountByDate.put(formerDate,amountByDate.get(formerDate)+giftAmount);
+            } else if(giftDate >= deepLapsedDate && giftDate < extendedLapsedDate){
+                amountByDate.put(deepLapsedDate,amountByDate.get(deepLapsedDate)+giftAmount);
+            } else if(giftDate >= extendedLapsedDate && giftDate < lapsedDate){
+                amountByDate.put(extendedLapsedDate,amountByDate.get(extendedLapsedDate)+giftAmount);
             } else if(giftDate >= lapsedDate){
                 amountByDate.put(lapsedDate,amountByDate.get(lapsedDate)+giftAmount);
             }
@@ -423,36 +459,35 @@ public with sharing class ACC_Segment_SVC {
 	* @description a map for evaluating a collection of giftitems against the date and amount thresholds
     *   for the giving levels.  keyed by date, followed by amount and the associated givinglevel object
     *   TODO:  this should ultimately be backed by custom metadata
-	* @param void
+	* @param firstDate the first date 
+    * @param effectiveDate the effective date to evaluate the giving levels by
 	* @return Map<Date, Map<Decimal, givingLevel>>
 	********************************************************************************************************/
-    public Map<Date, Map<Decimal, givingLevel>> givingLevelByDateAndAmount {
-        get {
-            givingLevelByDateAndAmount = new Map<Date, Map<Decimal, givingLevel>>();
-            for(String levelName:statusRules.keyset()){
-                Integer timeAgo;
-                for(Integer times:statusRules.get(levelName).keyset()){
-                    timeAgo = times;
-                }
-                Decimal amountThreshold = statusRules.get(levelName).get(timeAgo);
-                Decimal maxAmount = 0;
-                if(levelName.contains('Sustainer') || levelName.contains('Major')){
-                    maxAmount = 0;
-                } else if(levelName.contains('Mid')){
-                    maxAmount = 9999.99;
-                } else {
-                    maxAmount = 0;
-                }
-                Integer daysAgo = levelName.contains('Sustainer') ? timeAgo : null;
-                Integer monthsAgo = levelName.contains('Sustainer') ? null : timeAgo;
-                givingLevel gl = new givingLevel(levelName,daysAgo,monthsAgo,amountThreshold,maxAmount);
-                if(!givingLevelByDateAndAmount.containsKey(gl.dateThreshold))
-                    givingLevelByDateAndAmount.put(gl.dateThreshold, new Map<Decimal, givingLevel>());
-                givingLevelByDateAndAmount.get(gl.dateThreshold).put(gl.amountThreshold,gl);
+    public static Map<Date, Map<Decimal, givingLevel>> getGivingLevelByDateAndAmount(Date firstDate, Date effectiveDate) {
+        
+        Map<Date, Map<Decimal, givingLevel>> givingLevelByDateAndAmount = new Map<Date, Map<Decimal, givingLevel>>();
+        for(String levelName:statusRules.keyset()){
+            Integer timeAgo;
+            for(Integer times:statusRules.get(levelName).keyset()){
+                timeAgo = times;
             }
-            return givingLevelByDateAndAmount;
+            Decimal amountThreshold = statusRules.get(levelName).get(timeAgo);
+            Decimal maxAmount = 0;
+            if(levelName.contains('Sustainer') || levelName.contains('Major')){
+                maxAmount = 0;
+            } else if(levelName.contains('Mid')){
+                maxAmount = 24999.99;
+            } else {
+                maxAmount = 0;
+            }
+            Integer daysAgo = levelName.contains('Sustainer') ? timeAgo : null;
+            Integer monthsAgo = levelName.contains('Sustainer') ? null : timeAgo;
+            givingLevel gl = new givingLevel(levelName,daysAgo,monthsAgo,amountThreshold,maxAmount,firstDate,effectiveDate);
+            if(!givingLevelByDateAndAmount.containsKey(gl.dateThreshold))
+                givingLevelByDateAndAmount.put(gl.dateThreshold, new Map<Decimal, givingLevel>());
+            givingLevelByDateAndAmount.get(gl.dateThreshold).put(gl.amountThreshold,gl);
         }
-        set; 
+        return givingLevelByDateAndAmount;
         
     }  
 
@@ -464,36 +499,39 @@ public with sharing class ACC_Segment_SVC {
         public String levelName;
         public String status;
         public String fieldName;
+        public String dateFieldName;
         public Date dateThreshold;
         public Decimal amountThreshold;
         public Decimal maxAmount;
         public Integer daysAgo;
         public Integer monthsAgo;
 
-        public givingLevel(String levelName, Integer daysAgo, Integer monthsAgo, Decimal amtThreshold, Decimal maxAmount){
+        public givingLevel(String levelName, Integer daysAgo, Integer monthsAgo, Decimal amtThreshold, Decimal maxAmount, Date firstDate, Date effectiveDate){
             this.levelName = levelName;
             this.amountThreshold = amtThreshold;
             this.maxAmount = maxAmount;
-            List<String> statusElements = levelName.split(' ',2);
-            this.status = statusElements[0];
-            String type = statusElements[1];
+            this.status  = parseTypeAndStatusFromLevel(levelName,'status');
+            String type = parseTypeAndStatusFromLevel(levelName,'type');
 
             switch on type {
                 when 'Major Donor' {
                     this.fieldName = 'Major_Donor_Status__c';
-                    this.dateThreshold = monthsAgo == 0 ? firstDate : Date.Today().addMonths(-(monthsAgo));
+                    this.dateFieldName = 'Major_Donor_Status_Applied_Date__c';
+                    this.dateThreshold = monthsAgo == 0 ? firstDate : effectiveDate.addMonths(-(monthsAgo));
                 }
                 when 'Mid Level Donor' {
                     this.fieldName = 'Mid_Level_Donor_Status__c';
-                    this.dateThreshold = monthsAgo == 0 ? firstDate : Date.Today().addMonths(-(monthsAgo));
+                    this.dateFieldName = 'Mid_Level_Donor_Status_Applied_Date__c';
+                    this.dateThreshold = monthsAgo == 0 ? firstDate : effectiveDate.addMonths(-(monthsAgo));
                 }
                 when 'Donor' {
                     this.fieldName = 'Donor_Status__c';
-                    this.dateThreshold = monthsAgo == 0 ? firstDate : Date.Today().addMonths(-(monthsAgo));
+                    this.dateFieldName = 'Donor_Status_Applied_Date__c';
+                    this.dateThreshold = monthsAgo == 0 ? firstDate : effectiveDate.addMonths(-(monthsAgo));
                 }
                 when 'Sustainer' {
                     this.fieldName = 'Sustainer_Status__c';
-                    this.dateThreshold = daysAgo == 0 ? firstDate : Date.Today().addDays(-(daysAgo));
+                    this.dateThreshold = daysAgo == 0 ? firstDate : effectiveDate.addDays(-(daysAgo));
                 }
             }
         }
@@ -540,7 +578,9 @@ public with sharing class ACC_Segment_SVC {
         if(objectType == 'Contact' || objectType == 'Opportunity')
             soql+=' AccountId, ';
         soql += String.join(segmentFields, ', ');
-        soql += ', Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c';
+        if(objectType == 'Contact' || objectType == 'Account')
+            soql += ', Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c';
+            
         soql+=' FROM '+objectType;
         return soql;
     }
@@ -605,35 +645,60 @@ public with sharing class ACC_Segment_SVC {
                 'Active Mid Level Donor' => new Map<Integer, Decimal>{
                     12 => 1000.0
                 },
-                'Active Sustainer' => new Map<Integer, Decimal>{
-                    90 => .01
-                },
                 'Active Donor' => new Map<Integer, Decimal>{
                     12 => .01
                 },
                 'Lapsed Major Donor' => new Map<Integer, Decimal>{
-                    24 => 10000.0
+                    24 => 25000.0
                 },
                 'Lapsed Mid Level Donor' => new Map<Integer, Decimal>{
                     24 => 1000.0
                 },
-                'Lapsed Sustainer' => new Map<Integer, Decimal>{
-                   0 => .01 
-                },
                 'Lapsed Donor' => new Map<Integer, Decimal>{
                     24 => .01
                 },
-                'Former Major Donor' => new Map<Integer, Decimal>{
-                    0 => 10000.0
+                'Extended Lapsed Major Donor' => new Map<Integer, Decimal>{
+                    60 => 25000.0
                 },
-                'Former Mid Level Donor' => new Map<Integer, Decimal>{
+                'Extended Lapsed Mid Level Donor' => new Map<Integer, Decimal>{
+                    60 => 1000.0
+                },
+                'Extended Lapsed Donor' => new Map<Integer, Decimal>{
+                    60 => .01
+                },
+                'Deep Lapsed Major Donor' => new Map<Integer, Decimal>{
+                    0 => 25000.0
+                },
+                'Deep Lapsed Mid Level Donor' => new Map<Integer, Decimal>{
                     0 => 1000.0
                 },
-                'Former Donor' => new Map<Integer, Decimal>{
+                'Deep Lapsed Donor' => new Map<Integer, Decimal>{
                     0 => .01
                 }
             };
         }
         set;
+    }
+
+	/*******************************************************************************************************
+	* @description get type and status from level name
+    *  
+	********************************************************************************************************/
+    public static String parseTypeAndStatusFromLevel(String levelName, String type){
+        List<String> statuses = new List<String>();
+
+        Schema.DescribeFieldResult fieldResult = Account.Donor_Status__c.getDescribe();
+        for(Schema.PicklistEntry ple:fieldResult.getPicklistValues()){
+            statuses.add(ple.getValue());
+        }
+        String returnValue;
+        for(String status:statuses){
+            if(levelName.contains(status)){
+                String level = levelName.contains('Prospect') ? levelName.split(status)[0].trim() : levelName.split(status)[1].trim();
+                returnValue = type == 'status' ? status : level;
+            }
+        }
+        return returnValue;
+
     }
 }

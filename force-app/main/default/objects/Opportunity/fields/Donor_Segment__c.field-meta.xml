@@ -22,9 +22,14 @@
                 <label>Lapsed Major Donor</label>
             </value>
             <value>
-                <fullName>Former Major Donor</fullName>
+                <fullName>Extended Lapsed Major Donor</fullName>
                 <default>false</default>
-                <label>Former Major Donor</label>
+                <label>Extended Lapsed Major Donor</label>
+            </value>
+            <value>
+                <fullName>Deep Lapsed Major Donor</fullName>
+                <default>false</default>
+                <label>Deep Lapsed Major Donor</label>
             </value>
             <value>
                 <fullName>Major Donor Prospect</fullName>
@@ -42,9 +47,14 @@
                 <label>Lapsed Mid Level Donor</label>
             </value>
             <value>
-                <fullName>Former Mid Level Donor</fullName>
+                <fullName>Extended Lapsed Mid Level Donor</fullName>
                 <default>false</default>
-                <label>Former Mid Level Donor</label>
+                <label>Extended Lapsed Mid Level Donor</label>
+            </value>
+            <value>
+                <fullName>Deep Lapsed Mid Level Donor</fullName>
+                <default>false</default>
+                <label>Deep Lapsed Mid Level Donor</label>
             </value>
             <value>
                 <fullName>Mid Level Prospect</fullName>
@@ -77,9 +87,14 @@
                 <label>Lapsed Donor</label>
             </value>
             <value>
-                <fullName>Former Donor</fullName>
+                <fullName>Extended Lapsed Donor</fullName>
                 <default>false</default>
-                <label>Former Donor</label>
+                <label>Extended Lapsed Donor</label>
+            </value>
+            <value>
+                <fullName>Deep Lapsed Donor</fullName>
+                <default>false</default>
+                <label>Deep Lapsed Donor</label>
             </value>
         </valueSetDefinition>
     </valueSet>

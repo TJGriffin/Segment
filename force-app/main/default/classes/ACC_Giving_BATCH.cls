@@ -57,7 +57,7 @@ public with sharing class ACC_Giving_BATCH implements Database.Batchable<sObject
 	* @return Querylocator the scope of the batch
 	*/  	 
 	public Database.QueryLocator start(Database.BatchableContext BC) {
-        
+        List<String> softCreditRoles = ACC_Giving_SVC.softCreditRoles;
 		String soqlQuery = ACC_Giving_SVC.getBatchSoql(isAccount);
         String whereClause = ACC_Giving_SVC.getBatchWhereClause(startDate,accountIds);
 		soqlQuery+=whereClause;
@@ -87,6 +87,6 @@ public with sharing class ACC_Giving_BATCH implements Database.Batchable<sObject
 	* @param SC schedulable context
 	*/ 
     public void execute(SchedulableContext sc) {
-		Database.executeBatch(new ACC_Segment_BATCH(),50);
+		Database.executeBatch(new ACC_Giving_BATCH(),50);
     }
 }

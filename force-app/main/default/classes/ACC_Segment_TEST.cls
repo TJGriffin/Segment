@@ -167,10 +167,11 @@ private class ACC_Segment_TEST {
         ACC_Segment_SVC segmentService = new ACC_Segment_SVC(accounts);
         test.stopTest();
 
-        system.assert(ACC_Segment_SVC.firstDate != null);
-        system.assert(ACC_Segment_SVC.formerDate != null);
-        system.assert(ACC_Segment_SVC.lapsedDate != null);
-        system.assert(ACC_Segment_SVC.lapsedSustainer != null);
+        system.assert(segmentService.firstDate != null);
+        system.assert(segmentService.deepLapsedDate != null);
+        system.assert(segmentService.extendedLapsedDate != null);
+        system.assert(segmentService.lapsedDate != null);
+        system.assert(segmentService.lapsedSustainer != null);
 
     }
     @isTest

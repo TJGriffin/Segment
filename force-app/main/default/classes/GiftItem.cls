@@ -15,6 +15,12 @@ public class GiftItem implements Comparable {
 		* @description date of the gift
 		*/
 		@auraEnabled public Date closeDate {get;set;}
+
+		/*******************************************************************************************************
+		* @description fiscal year
+		*/
+		@auraEnabled public Integer fiscalYear {get;set;}
+
 		/*******************************************************************************************************
 		* @description date of the gift
 		*/
@@ -124,6 +130,7 @@ public class GiftItem implements Comparable {
             this.oppAmount = opp.Amount;
             this.Name = opp.Name;
             this.closeDate = opp.CloseDate;
+			this.fiscalYear = opp.FiscalYear;
             this.hardCreditAmount =  calculateAmount('won', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed);
             this.softCreditAmount = 0;
             this.pledgedAmountOutstanding = calculateAmount('pledged', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed); 
@@ -141,6 +148,7 @@ public class GiftItem implements Comparable {
             this.isPmt = true;
             this.isRecurring = false;
             this.closeDate = opp.CloseDate;
+			this.fiscalYear = opp.FiscalYear;
             this.lastReceivedDate = pmt.npe01__Paid__c ? pmt.npe01__Payment_Date__c : null;
             this.HardCreditAmount = calculateAmount('won',pmt);
             this.SoftCreditAmount = 0;
@@ -163,6 +171,7 @@ public class GiftItem implements Comparable {
 			this.opportunityId = crole.OpportunityId;
 			this.isRecurring = false;
 			this.closeDate = crole.Opportunity.CloseDate;
+			this.fiscalYear = crole.Opportunity.fiscalYear;
             this.lastReceivedDate  = crole.Opportunity.CloseDate;
 			this.HardCreditAmount = 0;
 			this.SoftCreditAmount = calculateAmount('won', crole.Opportunity.Amount, crole.Opportunity.npe01__Amount_Outstanding__c, crole.Opportunity.StageName, crole.Opportunity.IsWon, crole.Opportunity.IsClosed);
@@ -183,6 +192,7 @@ public class GiftItem implements Comparable {
 			this.opportunityId = psc.npsp__Opportunity__c;
 			this.isRecurring = false;
 			this.closeDate = psc.npsp__Opportunity__r.CloseDate;
+			this.fiscalYear = psc.npsp__Opportunity__r.FiscalYear;
             this.lastReceivedDate  = psc.npsp__Opportunity__r.CloseDate;
 			this.HardCreditAmount = 0;
 			this.SoftCreditAmount = calculateAmount('won', psc.npsp__Amount__c, psc.npsp__Opportunity__r.npe01__Amount_Outstanding__c, psc.npsp__Opportunity__r.StageName, psc.npsp__Opportunity__r.IsWon, psc.npsp__Opportunity__r.IsClosed);
@@ -203,6 +213,7 @@ public class GiftItem implements Comparable {
 			this.opportunityId = ascr.npsp__Opportunity__c; 
 			this.isRecurring = false;
 			this.closeDate = ascr.npsp__Opportunity__r.CloseDate;
+			this.fiscalYear = ascr.npsp__Opportunity__r.FiscalYear;
             this.lastReceivedDate  = ascr.npsp__Opportunity__r.CloseDate;
 			this.HardCreditAmount = 0;
 			this.SoftCreditAmount = calculateAmount('won', ascr.npsp__Amount__c, ascr.npsp__Opportunity__r.npe01__Amount_Outstanding__c, ascr.npsp__Opportunity__r.StageName, ascr.npsp__Opportunity__r.IsWon, ascr.npsp__Opportunity__r.IsClosed);

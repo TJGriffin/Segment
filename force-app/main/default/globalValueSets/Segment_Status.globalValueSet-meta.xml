@@ -11,9 +11,14 @@
         <label>Lapsed</label>
     </customValue>
     <customValue>
-        <fullName>Former</fullName>
+        <fullName>Deep Lapsed</fullName>
         <default>false</default>
-        <label>Former</label>
+        <label>Deep Lapsed</label>
+    </customValue>
+    <customValue>
+        <fullName>Extended Lapsed</fullName>
+        <default>false</default>
+        <label>Extended Lapsed</label>
     </customValue>
     <customValue>
         <fullName>Prospect</fullName>

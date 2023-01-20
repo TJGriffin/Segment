@@ -1,0 +1,10 @@
+<template>
+    <lightning-accordion allow-multiple-sections-open=true active-section-name="annual">
+        <lightning-accordion-section name="annual" label="Giving By Fiscal Year">
+            <c-acc-annual-giving-history record-id={recordId}></c-acc-annual-giving-history>
+        </lightning-accordion-section>
+        <lightning-accordion-section name="detail" label="Giving Detail">
+            <c-acc-giving record-id={recordId}></c-acc-giving>
+        </lightning-accordion-section>
+    </lightning-accordion>
+</template>

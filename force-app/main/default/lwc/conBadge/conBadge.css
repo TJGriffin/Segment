@@ -1,0 +1,20 @@
+.violet {  
+    --slds-c-badge-color-background: #7155FF;
+    --slds-c-badge-text-color:#fff;
+}
+.teal {  
+    --slds-c-badge-color-background:#003A48;
+    --slds-c-badge-text-color:#fff;
+}
+.canary {  
+    --slds-c-badge-color-background:#FFD215;
+    --slds-c-badge-text-color:#666;
+}
+.tangerine {   
+    --slds-c-badge-color-background:#FF5A3D;
+    --slds-c-badge-text-color:#fff;
+}
+.cobalt {   
+    --slds-c-badge-color-background:#00479C;
+    --slds-c-badge-text-color:#fff;
+}

@@ -3,10 +3,12 @@ import wireGetGiftHistory from '@salesforce/apex/ACC_Giving_CTRL.getGiftHistory'
 
 const COLUMNS = [
     {label: 'Year', fieldName: 'year', type: 'text', initialWidth:80},
+    {label: 'Committed', fieldName: 'committedAmount', type: 'currency'},
     {label: 'Hard Credit', fieldName: 'hardCreditAmount', type: 'currency'},
     {label: 'Soft Credit', fieldName: 'softCreditAmount', type: 'currency'},
-    {label: 'Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency'},
-    {label: 'Received', fieldName: 'totalAmount', type: 'currency'}
+    {label: 'Received', fieldName: 'receivedAmount', type: 'currency'},
+    {label: 'Outstanding Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency'},
+    {label: 'Written Off', fieldName: 'writtenOffAmount', type: 'currency'}
 ];
 
 export default class AccAnnualGivingHistory extends LightningElement {
@@ -21,8 +23,12 @@ export default class AccAnnualGivingHistory extends LightningElement {
         this.showSpinner=false;
         const {data,error} = result;
         if(data){
-            console.log(JSON.stringify(data));
-            this.giftHistory = data;
+            var gifts = [];
+            data.forEach(row=>{
+                if(row.committedAmount > 0 || row.receivedAmount > 0 || row.pledgedAmountOutstanding > 0)
+                    gifts.push(row);
+            })
+            this.giftHistory = gifts;
         }
     }
 }

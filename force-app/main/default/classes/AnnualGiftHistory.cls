@@ -26,6 +26,25 @@ public class AnnualGiftHistory implements Comparable {
     @auraEnabled public Decimal pledgedAmountOutstanding { get; set; }
 
     /*******************************************************************************************************
+    * @description total pledged amount still outstanding
+    */
+    @auraEnabled public Decimal committedAmount { get; set; }
+    /*******************************************************************************************************
+    * @description total pledged amount still outstanding
+    */
+    @auraEnabled public Decimal uncommittedAmount { get; set; }
+
+    /*******************************************************************************************************
+    * @description total pledged amount still outstanding
+    */
+    @auraEnabled public Decimal writtenOffAmount { get; set; }
+
+    /*******************************************************************************************************
+    * @description total pledged amount still outstanding
+    */
+    @auraEnabled public Decimal lostAmount { get; set; }
+
+    /*******************************************************************************************************
     * @description total number of gifts
     */
     @auraEnabled public Integer numGifts { get; set; }
@@ -34,6 +53,16 @@ public class AnnualGiftHistory implements Comparable {
     * @description hard credit + soft credit - pledged amount outstanding
     */
     @auraEnabled public Decimal totalAmount { get; set; }
+
+    /*******************************************************************************************************
+    * @description hard credit + soft credit - pledged amount outstanding
+    */
+    @auraEnabled public Decimal receivedAmount { 
+        get{
+            return committedAmount - pledgedAmountOutstanding - writtenOffAmount;
+        } 
+        set; 
+    }
 
     /*******************************************************************************************************
     * @description accountId
@@ -64,6 +93,10 @@ public class AnnualGiftHistory implements Comparable {
         this.softCreditAmount = softCreditAmount;
         this.pledgedAmountOutstanding = pledgedAmountOutstanding;
         this.totalAmount = totalAmount;
+        this.committedAmount = totalAmount;
+        this.uncommittedAmount = 0;
+        this.writtenOffAmount = 0;
+        this.lostAmount = 0;
         this.accountId = accountId;
     }
 

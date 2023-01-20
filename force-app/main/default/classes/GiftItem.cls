@@ -65,7 +65,35 @@ public class GiftItem implements Comparable {
 		* @description hard credit + soft credit - pledged amount outstanding
 		*/
 		@auraEnabled public Decimal totalAmount { get; set; }
-		
+
+		/*******************************************************************************************************
+		* @description hard credit + soft credit - pledged amount outstanding
+		*/
+		@auraEnabled public Decimal uncommittedAmount { get; set; }
+
+		/*******************************************************************************************************
+		* @description hard credit + soft credit - pledged amount outstanding
+		*/
+		@auraEnabled public Decimal writtenOffAmount { get; set; }
+
+		/*******************************************************************************************************
+		* @description hard credit + soft credit - pledged amount outstanding
+		*/
+		@auraEnabled public Decimal committedAmount { 
+			get {
+				return totalAmount - writtenOffAmount;
+			}
+			set; 
+		}
+		/*******************************************************************************************************
+		* @description hard credit + soft credit - pledged amount outstanding
+		*/
+		@auraEnabled public Decimal receivedAmount { get; set; }
+		/*******************************************************************************************************
+		* @description hard credit + soft credit - pledged amount outstanding
+		*/
+		@auraEnabled public Decimal lostAmount { get; set; }
+
 		/*******************************************************************************************************
 		* @description hard credit + soft credit - pledged amount outstanding
 		*/
@@ -131,9 +159,13 @@ public class GiftItem implements Comparable {
             this.Name = opp.Name;
             this.closeDate = opp.CloseDate;
 			this.fiscalYear = opp.FiscalYear;
-            this.hardCreditAmount =  calculateAmount('won', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed);
+            this.hardCreditAmount =  calculateAmount('won', opp);
+			this.uncommittedAmount =  calculateAmount('uncommitted', opp);
+			this.receivedAmount = calculateAmount('received',opp);
+			this.lostAmount =  calculateAmount('lost', opp);
+			this.writtenOffAmount = calculateAmount('writtenoff',opp);
             this.softCreditAmount = 0;
-            this.pledgedAmountOutstanding = calculateAmount('pledged', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed); 
+            this.pledgedAmountOutstanding = calculateAmount('pledged', opp); 
             this.TotalAmount = this.HardCreditAmount; 
             this.IsWon = opp.IsWon;
             this.IsClosed = opp.IsClosed;
@@ -150,7 +182,11 @@ public class GiftItem implements Comparable {
             this.closeDate = opp.CloseDate;
 			this.fiscalYear = opp.FiscalYear;
             this.lastReceivedDate = pmt.npe01__Paid__c ? pmt.npe01__Payment_Date__c : null;
-            this.HardCreditAmount = calculateAmount('won',pmt);
+            this.HardCreditAmount = calculateAmount('won',opp, pmt);
+			this.uncommittedAmount = calculateAmount('uncommitted',opp, pmt);
+			this.lostAmount = calculateAmount('lost',opp, pmt);
+			this.receivedAmount = calculateAmount('received',opp, pmt);
+			this.writtenOffAmount = calculateAmount('writtenoff',opp,pmt);
             this.SoftCreditAmount = 0;
             this.pledgedAmountOutstanding = 0;
             this.campaignName = opp.Campaign.Name;
@@ -174,10 +210,16 @@ public class GiftItem implements Comparable {
 			this.fiscalYear = crole.Opportunity.fiscalYear;
             this.lastReceivedDate  = crole.Opportunity.CloseDate;
 			this.HardCreditAmount = 0;
-			this.SoftCreditAmount = calculateAmount('won', crole.Opportunity.Amount, crole.Opportunity.npe01__Amount_Outstanding__c, crole.Opportunity.StageName, crole.Opportunity.IsWon, crole.Opportunity.IsClosed);
-			this.pledgedAmountOutstanding = crole.Opportunity.npe01__Amount_Outstanding__c;
-			this.TotalAmount = this.SoftCreditAmount;
+			//this.SoftCreditAmount = calculateAmount('won', crole.Opportunity.Amount, crole.Opportunity.npe01__Amount_Outstanding__c, crole.Opportunity.StageName, crole.Opportunity.IsWon, crole.Opportunity.IsClosed);
+			//this.pledgedAmountOutstanding = crole.Opportunity.npe01__Amount_Outstanding__c;
             this.oppAmount = crole.Opportunity.Amount;
+			this.softCreditAmount = calculateAmount('won',crole);
+			this.pledgedAmountOutstanding = calculateAmount('pledged',crole);
+			this.uncommittedAmount = calculateAmount('uncommitted',crole);
+			this.receivedAmount = calculateAmount('received',crole);
+			this.lostAmount = calculateAmount('lost',crole);
+			this.writtenOffAmount = calculateAmount('writtenoff',crole);
+			this.totalAmount = this.softCreditAmount;
 			this.IsWon = crole.Opportunity.IsWon;
             this.campaignName = crole.Opportunity.Campaign.Name;
 			this.IsClosed = crole.Opportunity.IsClosed;
@@ -195,8 +237,14 @@ public class GiftItem implements Comparable {
 			this.fiscalYear = psc.npsp__Opportunity__r.FiscalYear;
             this.lastReceivedDate  = psc.npsp__Opportunity__r.CloseDate;
 			this.HardCreditAmount = 0;
-			this.SoftCreditAmount = calculateAmount('won', psc.npsp__Amount__c, psc.npsp__Opportunity__r.npe01__Amount_Outstanding__c, psc.npsp__Opportunity__r.StageName, psc.npsp__Opportunity__r.IsWon, psc.npsp__Opportunity__r.IsClosed);
-			this.pledgedAmountOutstanding = psc.npsp__Opportunity__r.npe01__Amount_Outstanding__c;
+			//this.SoftCreditAmount = calculateAmount('won', psc.npsp__Amount__c, psc.npsp__Opportunity__r.npe01__Amount_Outstanding__c, psc.npsp__Opportunity__r.StageName, psc.npsp__Opportunity__r.IsWon, psc.npsp__Opportunity__r.IsClosed);
+			this.softCreditAmount = calculateAmount('won',psc);
+			this.pledgedAmountOutstanding = calculateAmount('pledged',psc);
+			this.uncommittedAmount = calculateAmount('uncommitted',psc);
+			this.receivedAmount = calculateAmount('received',psc);
+			this.lostAmount = calculateAmount('lost',psc);
+			this.writtenOffAmount = calculateAmount('writtenoff',psc);
+			//this.pledgedAmountOutstanding = psc.npsp__Opportunity__r.npe01__Amount_Outstanding__c;
 			this.TotalAmount = this.SoftCreditAmount;
             this.oppAmount = psc.npsp__Opportunity__r.Amount;
 			this.IsWon = psc.npsp__Opportunity__r.IsWon;
@@ -216,8 +264,14 @@ public class GiftItem implements Comparable {
 			this.fiscalYear = ascr.npsp__Opportunity__r.FiscalYear;
             this.lastReceivedDate  = ascr.npsp__Opportunity__r.CloseDate;
 			this.HardCreditAmount = 0;
-			this.SoftCreditAmount = calculateAmount('won', ascr.npsp__Amount__c, ascr.npsp__Opportunity__r.npe01__Amount_Outstanding__c, ascr.npsp__Opportunity__r.StageName, ascr.npsp__Opportunity__r.IsWon, ascr.npsp__Opportunity__r.IsClosed);
-			this.pledgedAmountOutstanding = ascr.npsp__Opportunity__r.npe01__Amount_Outstanding__c;
+			//this.SoftCreditAmount = calculateAmount('won', ascr.npsp__Amount__c, ascr.npsp__Opportunity__r.npe01__Amount_Outstanding__c, ascr.npsp__Opportunity__r.StageName, ascr.npsp__Opportunity__r.IsWon, ascr.npsp__Opportunity__r.IsClosed);
+			//this.pledgedAmountOutstanding = ascr.npsp__Opportunity__r.npe01__Amount_Outstanding__c;
+			this.softCreditAmount = calculateAmount('won',ascr);
+			this.pledgedAmountOutstanding = calculateAmount('pledged',ascr);
+			this.uncommittedAmount = calculateAmount('uncommitted',ascr);
+			this.receivedAmount = calculateAmount('received',ascr);
+			this.lostAmount = calculateAmount('lost',ascr);
+			this.writtenOffAmount = calculateAmount('writtenoff',ascr);
 			this.TotalAmount = this.SoftCreditAmount;
             this.oppAmount = ascr.npsp__Opportunity__r.Amount;
 			this.IsWon = ascr.npsp__Opportunity__r.IsWon;
@@ -238,60 +292,106 @@ public class GiftItem implements Comparable {
 				return this.closeDate > giComp.closeDate ? 1 : -1; 
 			}
 		}
+		public static Decimal calculateAmount(String calcType, SObject sobj){
+			String objType = sobj.getSObjectType().getDescribe().getName();
+			String stage;
+			Boolean isWon;
+			Boolean isClosed;
+			Decimal pledgedAmountOutstanding = 0;
+			Decimal oppAmount = 0;
+			Decimal giftAmount = 0;
+			Decimal returnAmount = 0;
+			Decimal writtenOff = 0;
+			Decimal received = 0;
 
-        public static Decimal calculateAmount(String calcType, Decimal CloseAmount, Decimal Outstanding, String Stage, Boolean isWon, Boolean isClosed) {
-            Decimal Amount = 0;
-            if(calcType=='won') {
-                if(isWon && isClosed) {
-                    if(Outstanding==null || Outstanding==0) {
-                        Amount = CloseAmount;
-                    } else {
-                        Amount = CloseAmount - Outstanding;
-                    }
-                } else {
-                    if(Outstanding==null || Outstanding==0) {
-                        Amount = 0;
-                    } else {
-                        Amount = CloseAmount - Outstanding;
-                    }
-                }
-            } else if(calcType=='pledged') {
-                if(isWon && isClosed) {
-                    if(Outstanding==null || Outstanding==0) {
-                        Amount = 0;
-                    } else {
-                        Amount = Outstanding;
-                    }
-                } else {
-                    if(Outstanding==null || Outstanding==0) {
-                        Amount = CloseAmount;
-                    } else {
-                        Amount = Outstanding;
-                    }
-                }
-            } else if(calcType=='lost') {
-                if(isClosed && !isWon) {
-                    Amount = CloseAmount;
-                }
-            }
-            
-            return Amount;
-        }
-        public static Decimal calculateAmount(String calcType, npe01__OppPayment__c pmt) {
+			switch on objType.toLowerCase() {
+				when 'opportunity' {
+					pledgedAmountOutstanding = sobj.get('npe01__Amount_Outstanding__c') != null ? (Decimal) sobj.get('npe01__Amount_Outstanding__c') : 0;
+					oppAmount = sobj.get('Amount') != null ? (Decimal) sobj.get('Amount') : 0;
+					giftAmount = oppAmount;
+					stage = (String) sobj.get('StageName');
+					isWon = (Boolean) sobj.get('IsWon');
+					isClosed = (Boolean) sobj.get('IsClosed');
+					writtenOff = sobj.get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.get('npe01__Amount_Written_Off__c') : 0;
+					received = sobj.get('npe01__Payments_Made__c') != null ? (Decimal) sobj.get('npe01__Payments_Made__c') : 0;
+				}
+				when 'npsp__account_soft_credit__c','npsp__partial_soft_credit__c' {
+					writtenOff = sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Written_Off__c') : 0;
+					pledgedAmountOutstanding = sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Outstanding__c') != null ? (Decimal) sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Outstanding__c') : 0;
+					oppAmount = (Decimal) sobj.getSObject('npsp__Opportunity__r').get('Amount');
+					giftAmount = (Decimal) sobj.get('npsp__Amount__c');
+					stage = (String) sobj.getSObject('npsp__Opportunity__r').get('StageName');
+					isWon = (Boolean) sobj.getSObject('npsp__Opportunity__r').get('IsWon');
+					isClosed = (Boolean) sobj.getSObject('npsp__Opportunity__r').get('IsClosed');
+					received = sobj.getSObject('npsp__Opportunity__r').get('npe01__Payments_Made__c') != null ? (Decimal) sobj.getSObject('npsp__Opportunity__r').get('npe01__Payments_Made__c') : 0;
+				}
+				when 'opportunitycontactrole' {
+					writtenOff = sobj.getSObject('Opportunity').get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.getSObject('Opportunity').get('npe01__Amount_Written_Off__c') : 0;
+					pledgedAmountOutstanding = sobj.getSObject('Opportunity').get('npe01__Amount_Outstanding__c') != null ? (Decimal) sobj.getSObject('Opportunity').get('npe01__Amount_Outstanding__c') : 0;
+					oppAmount = (Decimal) sobj.getSObject('Opportunity').get('Amount');
+					giftAmount = oppAmount;
+					stage = (String) sobj.getSObject('Opportunity').get('StageName');
+					isWon = (Boolean) sobj.getSObject('Opportunity').get('IsWon');
+					isClosed = (Boolean) sobj.getSObject('Opportunity').get('IsClosed');
+					received = sobj.getSObject('Opportunity').get('npe01__Payments_Made__c') != null ? (Decimal) sobj.getSObject('Opportunity').get('npe01__Payments_Made__c') : 0;
+				}
+			}
+
+
+			switch on calcType {
+				when 'won' {
+					if(isWon || stage.equalsIgnoreCase('pledged'))
+						returnAmount = giftAmount;
+				}
+				when 'pledged' {
+					if((isWon && pledgedAmountOutstanding > 0) || stage.equalsIgnoreCase('pledged'))
+						returnAmount = pledgedAmountOutstanding > 0 ? pledgedAmountOutstanding : giftAmount; 
+				}
+				when 'lost' {
+					if(isclosed && !isWon) {
+						returnAmount = giftAmount;
+					} else {
+						returnAmount = writtenOff;
+					}
+
+				}
+				when 'writtenoff'{
+					returnAmount = writtenOff;
+				}
+				when 'uncommitted' {
+					if(!isClosed && !isWon && !stage.equalsIgnoreCase('pledged'))
+						returnAmount = giftAmount; 
+				}
+				when 'received' {
+					returnAmount = received;
+					if(isWon && returnAmount == 0)
+						returnAmount = giftAmount;
+				}
+			}
+
+			return returnAmount;
+		}
+
+        
+        public static Decimal calculateAmount(String calcType, Opportunity opp, npe01__OppPayment__c pmt) {
             Decimal Amount = 0;
             if(calcType=='won') {
                 if(pmt.npe01__Paid__c) {
                     Amount = pmt.npe01__Payment_Amount__c;
                 }
             } else if(calcType=='pledged') {
+                if(!pmt.npe01__Paid__c && opp.StageName=='Pledged') {
+                    Amount = pmt.npe01__Payment_Amount__c;
+                }
+            } else if(calcType == 'uncommitted') {
                 if(!pmt.npe01__Paid__c) {
                     Amount = pmt.npe01__Payment_Amount__c;
                 }
-            } else if(calcType=='lost') {
-                if(!pmt.npe01__Paid__c) {
-                    Amount = pmt.npe01__Payment_Amount__c;
-                }
-            }
+            } else if(calcType=='writtenoff' || calcType=='lost'){
+				Amount = pmt.npe01__Written_Off__c ? pmt.npe01__Payment_Amount__c : 0;
+				if(calcType == 'lost' && opp.isClosed && !opp.IsWon)
+					Amount = pmt.npe01__Payment_Amount__c;
+			}
             
             return Amount;
         }

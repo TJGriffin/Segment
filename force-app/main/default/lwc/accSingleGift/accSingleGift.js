@@ -32,7 +32,7 @@ export default class AccSingleGift extends LightningElement {
         return typeof this.gift !== undefined && this.gift != null && (this.gift.oppAmount - this.gift.TotalAmount != 0);
     }
     get showType(){
-        return typeof this.gift !== undefined && this.gift != null && this.gift.recordType != 'Donation';
+        return true;
     }
     get badgeClass(){
         return this.emphasize ? 'slds-badge_lightest' : 'slds-badge_inverse';

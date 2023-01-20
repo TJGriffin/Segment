@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Donor_Status_Applied_Date__c</fullName>
     <externalId>false</externalId>
-    <label>Donor Status Applied Date</label>
+    <label>Donor Lifecycle Status Applied Date</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>

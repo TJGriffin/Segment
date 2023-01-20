@@ -24,6 +24,23 @@ export default class AccBadges extends LightningElement {
     )
     account;
 
+    get className(){
+        if(typeof this.levelName === undefined || this.levelName == null)
+            return 'tangerine';
+        
+        if(this.levelName.includes('Lapse')){
+            return 'cobalt';
+        } else if(this.levelName.includes('Beacon')){
+            return 'violet';
+        } else if(this.levelName.includes('North')){
+            return 'teal';
+        } else if(this.levelName.includes('Active Luminary')){
+            return 'canary';
+        } else {
+            return 'tangerine';
+        }
+    }
+
     @wire(wireGetCustomBadges,{recordId:'$recordId'})
     setLabels(result){
         const {data,error} = result;
@@ -33,7 +50,13 @@ export default class AccBadges extends LightningElement {
     }
    
     get levelName(){
-        return getFieldValue(this.account.data,LEVEL);
+        var lvl = getFieldValue(this.account.data,LEVEL);
+        if(typeof lvl === undefined || lvl == null)
+            return null;
+
+        lvl = lvl.replace('Mid Level Donor','Beacon').replace('Major Donor','North Star').replace('Sustainer','Luminary');
+        
+        return lvl;
     }
     
 }

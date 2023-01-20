@@ -219,13 +219,13 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 		String soql;
 		switch on mode {
 			when ACCOUNT, ACCOUNT_ALL, ACCOUNT_ANNIV, null {
-				soql = 'SELECT Id, Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c FROM Account';
+				soql = 'SELECT Id, Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c, First_Recurring_Gift_Date__c, Last_Recurring_Gift_Date__c FROM Account';
 			}
 			when ACCOUNT_SC {
 				soql = 'SELECT Id, npsp__Opportunity__c, npsp__Account__c FROM npsp__Account_Soft_Credit__c';
 			}
 			when CONTACT_SC {
-				soql = 'SELECT ContactId, Contact.AccountId, Contact.Account.Major_Donor_Downgrade_Date__c, Contact.Account.Mid_Level_Donor_Downgrade_Date__c FROM OpportunityContactRole';
+				soql = 'SELECT ContactId, Contact.AccountId, Contact.Account.Major_Donor_Downgrade_Date__c, Contact.Account.Mid_Level_Donor_Downgrade_Date__c, Contact.Account.First_Recurring_Gift_Date__c, Contact.Account.Last_Recurring_Gift_Date__c FROM OpportunityContactRole';
 			}
 			when CONTACT_PSC {
 				soql = 'SELECT npsp__Contact__c, npsp__Contact__r.AccountId, npsp__Contact__r.Account.Major_Donor_Downgrade_Date__c, npsp__Contact__r.Account.Mid_Level_Donor_Downgrade_Date__c FROM npsp__Partial_Soft_Credit__c';

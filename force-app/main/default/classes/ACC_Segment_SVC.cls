@@ -15,7 +15,8 @@ public with sharing class ACC_Segment_SVC {
             extendedLapsedDate = value.addMonths(-24);
             lapsedDate = value.addMonths(-12);
             deepLapsedDate = value.addMonths(-60);
-            lapsedSustainer = value.addDays(-90);
+            lapsedSustainer = value.addDays(-60);
+            deepLapsedSustainer = value.addDays(-365);
         }
     }
     @TestVisible
@@ -28,10 +29,10 @@ public with sharing class ACC_Segment_SVC {
     private Date deepLapsedDate;
     @TestVisible
     private Date lapsedDate;
-
     @TestVisible
     private Date lapsedSustainer;
-
+    @TestVisible
+    private Date deepLapsedSustainer;
 
     /****
      * @description a collection of account ids to segment
@@ -142,8 +143,7 @@ public with sharing class ACC_Segment_SVC {
         String donorSegment;
         String majStatus = obj.isSet('Major_Donor_Status__c') ? (String) obj.get('Major_Donor_Status__c') : null;
         String midStatus = obj.isSet('Mid_Level_Donor_Status__c') ? (String) obj.get('Mid_Level_Donor_Status__c') : null;
-        //String susStatus = (String) obj.get('Sustainer_Status__c');
-        String susStatus = null;
+        String susStatus = obj.isSet('Sustainer_Status__c') ? (String) obj.get('Sustainer_Status__c') : null;
         String donStatus = obj.isSet('Donor_Status__c') ? (String) obj.get('Donor_Status__c') : null;
         if(String.isBlank(majStatus) && String.isBlank(midStatus) && String.isBlank(susStatus) && String.isBlank(donStatus))
             return donorSegment;
@@ -258,12 +258,9 @@ public with sharing class ACC_Segment_SVC {
             for(String fld:segmentFields){
                 String value = (String) acc.get(fld);
                 String existingValue = (String) con.get(fld);
-                isChange = value != existingValue && (String.isBlank(existingValue) || !existingValue.contains('Prospect'));
-                if(fld == 'Donor_Segment__c'){
-                    con.put(fld,value);
-                } else if(String.isBlank(existingValue) || !existingValue.contains('Prospect')){
-                    con.put(fld,value);
-                }
+                if(value != existingValue)
+                    isChange = true;
+                con.put(fld,value);
             }
             for(String fld:segmentFieldDates.values()){
                 con.put(fld,acc.get(fld));
@@ -312,9 +309,21 @@ public with sharing class ACC_Segment_SVC {
                     GivingLevel lvl = givingLevels.get(fieldName);
                     account.put(fieldName,lvl.status);
                 }
+                if(account.First_Recurring_Gift_Date__c != null){
+                    if((Date) account.Last_Recurring_Gift_Date__c > lapsedSustainer){
+                        account.put('Sustainer_Status__c' ,'Active');
+                        account.put('Sustainer_Status_Applied_Date__c',account.First_Recurring_Gift_Date__c);
+                    } else if((Date)account.Last_Recurring_Gift_Date__c > deepLapsedSustainer){
+                        account.put('Sustainer_Status__c' ,'Lapsed');
+                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
+                    } else {
+                        account.put('Sustainer_Status__c' ,'Deep Lapsed');
+                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
+                    }
+                }
                 updatedAccounts.put(accountId,account);
             }
-            
+
         }
         this.accountMap.putAll(updatedAccounts);
     }
@@ -546,7 +555,8 @@ public with sharing class ACC_Segment_SVC {
                 'Donor_Segment__c'=>'Donor_Segment_Applied_Date__c',
                 'Major_Donor_Status__c'=>'Major_Donor_Status_Applied_Date__c',
                 'Mid_Level_Donor_Status__c'=>'Mid_Level_Donor_Status_Applied_Date__c',
-                'Donor_Status__c'=>'Donor_Status_Applied_Date__c'
+                'Donor_Status__c'=>'Donor_Status_Applied_Date__c',
+                'Sustainer_Status__c'=>'Sustainer_Status_Applied_Date__c'
             };
         }
         set;
@@ -579,7 +589,7 @@ public with sharing class ACC_Segment_SVC {
             soql+=' AccountId, ';
         soql += String.join(segmentFields, ', ');
         if(objectType == 'Contact' || objectType == 'Account')
-            soql += ', Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c';
+            soql += ', Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c, First_Recurring_Gift_Date__c, Last_Recurring_Gift_Date__c';
             
         soql+=' FROM '+objectType;
         return soql;

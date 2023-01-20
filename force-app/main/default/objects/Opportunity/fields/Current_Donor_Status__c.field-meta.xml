@@ -4,7 +4,7 @@
     <externalId>false</externalId>
     <formula>TEXT(Account.Donor_Status__c)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-    <label>Current Donor Status</label>
+    <label>Current Donor Lifecycle Status</label>
     <required>false</required>
     <trackTrending>false</trackTrending>
     <type>Text</type>

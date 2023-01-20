@@ -5,9 +5,9 @@ import wireGetGiftItems from '@salesforce/apex/ACC_Giving_CTRL.getGiftItems';
 const COLUMNS = [
     {label: 'Name', fieldName: 'link', type: 'url', typeAttributes: {
             label : {fieldName: 'Name'}
-        }},
-    {label: 'Campaign', fieldName:'campaignName',type:'text',sortable:'true',initialWidth:160},
-   /* {label: 'Type', fieldName:'recordType',type:'text',sortable:'true',initialWidth:160},*/
+        },initialWidth:200},
+    /* {label: 'Campaign', fieldName:'campaignName',type:'text',sortable:'true',initialWidth:50},
+     {label: 'Type', fieldName:'recordType',type:'text',sortable:'true',initialWidth:160},*/
     {label: 'Status', fieldName: 'StageName', type: 'text', sortable:'true', initialWidth:120},
     {label: 'First Date', fieldName: 'closeDate', type: 'date-local',typeAttributes:{
         month:"2-digit",
@@ -23,6 +23,7 @@ const COLUMNS = [
     },
     {label: 'Received', fieldName: 'totalAmount', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency',sortable:'true', initialWidth:120},
+    {label: 'Written Off', fieldName: 'lostAmount', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Gift Total', fieldName: 'oppAmount', type: 'currency',sortable:'true', initialWidth:120}
 ];
 

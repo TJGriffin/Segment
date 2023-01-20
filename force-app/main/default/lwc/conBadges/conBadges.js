@@ -31,9 +31,30 @@ export default class ConBadges extends LightningElement {
         }
     }
 
+    get className(){
+        if(typeof this.levelName === undefined || this.levelName == null)
+            return 'tangerine';
+        
+        if(this.levelName.includes('Lapse')){
+            return 'cobalt';
+        } else if(this.levelName.includes('Beacon')){
+            return 'violet';
+        } else if(this.levelName.includes('North')){
+            return 'teal';
+        } else if(this.levelName.includes('Active') && this.levelName.includes('Luminary')){
+            return 'canary';
+        } else {
+            return 'tangerine';
+        }
+    }
     
     get levelName(){
-        return getFieldValue(this.contact.data,LEVEL);
+        var lvl = getFieldValue(this.contact.data,LEVEL);
+        if(typeof lvl === undefined || lvl == null)
+            return null;
+        lvl = lvl.replace('Mid Level Donor','Beacon').replace('Major Donor','North Star').replace('Sustainer','Luminary');
+        
+        return lvl;
     }
     get deceasedStatus(){
         var deceased;

@@ -3,13 +3,13 @@
         <lightning-layout>
             <lightning-layout-item padding="around-small">
                 <template if:true={levelName}>
-                    <lightning-badge label={levelName} class="slds-theme_success"></lightning-badge>
+                    <c-con-badge label={levelName} class-name={className}></c-con-badge>
                 </template>    
             </lightning-layout-item>
             <template if:true={labels}>
                 <template for:each={labels} for:item="label">
                     <lightning-layout-item padding="around-small" key={label}>
-                        <c-con-badge label={label} ></c-con-badge>
+                        <c-con-badge label={label} class-name={className}></c-con-badge>
                     </lightning-layout-item>
                 </template>
             </template>  

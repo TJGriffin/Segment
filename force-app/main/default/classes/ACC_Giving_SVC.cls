@@ -327,11 +327,15 @@ public with sharing class ACC_Giving_SVC {
         for(Opportunity opp:oppList) {
             Boolean isRecurring = String.isNotBlank(opp.npe03__Recurring_Donation__c);
             Decimal oppOutstanding = opp.npe01__Amount_Outstanding__c == null ? 0 : opp.npe01__Amount_Outstanding__c;
+            Decimal writtenOff = opp.npe01__Amount_Written_Off__c == null ? 0 : opp.npe01__Amount_Written_Off__c;
+            Decimal received = opp.npe01__Payments_Made__c == null ? 0 : opp.npe01__Payments_MAde__c;
             Boolean hasPayments = !isRecurring && opp.npe01__OppPayment__r != null && opp.npe01__OppPayment__r.size() >0;
+            
             if(hasPayments && !isRecurring) { 
                 for(npe01__OppPayment__c pmt:opp.npe01__OppPayment__r) {
                     GiftItem gi = new GiftItem(opp, pmt);
-
+                    gi.writtenOffAmount = writtenOff;
+                    gi.lostAmount = writtenOff;
                     if(!oppOutstandingMap.containsKey(opp.Id)) {
                         gi.pledgedAmountOutstanding = oppOutstanding; 
                         oppOutstandingMap.put(opp.Id,oppOutstanding);
@@ -575,14 +579,20 @@ public with sharing class ACC_Giving_SVC {
 				giftHistory.put(giftYear, agh);
 			}
             Boolean hasPayments = opp.npe01__OppPayment__r != null && opp.npe01__OppPayment__r.size() >0;
-            Decimal outstanding = hasPayments ? opp.npe01__Amount_Outstanding__c : GiftItem.calculateAmount('pledged', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed);
-            Decimal hardCredit = hasPayments ? opp.Amount - opp.npe01__Amount_Outstanding__c : GiftItem.calculateAmount('won', opp.Amount, 0, opp.StageName, opp.IsWon, opp.IsClosed);
+            Decimal outstanding = GiftItem.calculateAmount('pledged', opp);
+            Decimal hardCredit = GiftItem.calculateAmount('won', opp);
+            Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', opp);
+            Decimal writtenOff = GiftItem.calculateAmount('writtenoff',opp);
+            Decimal committedAmount = hardCredit;
 			Boolean lost = opp.IsClosed && !opp.IsWon;
 			if(!lost) {
 				AnnualGiftHistory agh = giftHistory.get(giftYear);
 				agh.hardCreditAmount += hardCredit;
+                agh.writtenOffAmount += writtenOff;
 				agh.pledgedAmountOutstanding += outstanding;
-				agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
+                agh.uncommittedAmount += uncommittedAmount;
+				agh.totalAmount += committedAmount;
+                agh.committedAmount += committedAmount;
 				giftHistory.put(giftYear, agh);
 				oppsByYear.get(giftYear).add(opp.Id);
 			}
@@ -598,9 +608,18 @@ public with sharing class ACC_Giving_SVC {
 				giftHistory.put(giftYear, agh);
 				oppsByYear.put(giftYear,new Set<Id>());
 			}
+            Decimal outstanding = GiftItem.calculateAmount('pledged', psc);
+            Decimal softCredit = GiftItem.calculateAmount('won', psc);
+            Decimal writtenOff = GiftItem.calculateAmount('writtenoff', psc);
+            Decimal committedAmount = softCredit;
+            Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', psc);
             AnnualGiftHistory agh = giftHistory.get(giftYear);
-            agh.softCreditAmount += psc.npsp__Amount__c;
-            agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
+            agh.pledgedAmountOutstanding += outstanding;
+            agh.softCreditAmount += softCredit;
+            agh.uncommittedAmount += uncommittedAmount;
+            agh.writtenOffAmount += writtenOff;
+            agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount + agh.uncommittedAmount;
+            agh.committedAmount += committedAmount;
             giftHistory.put(giftYear, agh);
 			softCredited.add(psc.npsp__Opportunity__c);
 			oppsByYear.get(giftYear).add(psc.npsp__Opportunity__c);
@@ -618,8 +637,17 @@ public with sharing class ACC_Giving_SVC {
 				oppsByYear.put(giftYear,new Set<Id>());
 			}
             AnnualGiftHistory agh = giftHistory.get(giftYear);
-            agh.softCreditAmount += ascr.npsp__Amount__c;
-            agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
+            Decimal outstanding = GiftItem.calculateAmount('pledged', ascr);
+            Decimal softCredit = GiftItem.calculateAmount('won', ascr);
+            Decimal writtenOff = GiftItem.calculateAmount('writtenoff', ascr);
+            Decimal committedAmount = softCredit;
+            Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', ascr);
+            agh.pledgedAmountOutstanding += outstanding;
+            agh.softCreditAmount += softCredit;
+            agh.writtenOffAmount += writtenOff;
+            agh.uncommittedAmount += uncommittedAmount;
+            agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount +agh.uncommittedAmount;
+            agh.committedAmount += committedAmount;
             giftHistory.put(giftYear, agh);
 			softCredited.add(ascr.npsp__Opportunity__c);
 			oppsByYear.get(giftYear).add(ascr.npsp__Opportunity__c);
@@ -641,6 +669,7 @@ public with sharing class ACC_Giving_SVC {
             AnnualGiftHistory agh = giftHistory.get(giftYear);
             agh.softCreditAmount += (crole.Opportunity.Amount - crole.Opportunity.npe01__Amount_Outstanding__c);
 			agh.pledgedAmountOutstanding += crole.Opportunity.npe01__Amount_Outstanding__c;
+            agh.writtenOffAmount += crole.Opportunity.npe01__Amount_Written_Off__c;
             agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
             giftHistory.put(giftYear, agh);
 			softCredited.add(crole.OpportunityId);
@@ -653,13 +682,18 @@ public with sharing class ACC_Giving_SVC {
 		totalRow.hardCreditAmount = 0;
 		totalRow.softCreditAmount = 0;
 		totalRow.pledgedAmountOutstanding = 0;
+        totalRow.committedAmount = 0;
 		totalRow.totalAmount = 0;
+        totalRow.receivedAmount = 0;
 		for(AnnualGiftHistory agh:giftHistory.values()) {
 			agh.numGifts = oppsByYear.containsKey(agh.Year) ? oppsByYear.get(agh.Year).size() : agh.numGifts;
 			totalRow.hardCreditAmount += agh.hardCreditAmount;
 			totalRow.softCreditAmount += agh.softCreditAmount;
 			totalRow.pledgedAmountOutstanding += agh.pledgedAmountOutstanding;
+            totalRow.committedAmount += agh.committedAmount;
+            totalRow.writtenOffAmount += agh.writtenOffAmount;
 			totalRow.totalAmount += agh.totalAmount;
+            totalRow.receivedAmount += agh.receivedAmount;
 		}
 		giftHistory.put('Total', totalRow);
 		List<AnnualGiftHistory> aghList = new List<AnnualGiftHistory>(giftHistory.values());
@@ -739,6 +773,8 @@ public with sharing class ACC_Giving_SVC {
         soql+=' npe03__Recurring_Donation__r.Name,'; 
         soql+=' npe03__Recurring_Donation__r.npsp__Status__c,'; 
         soql+=' npe01__Amount_Outstanding__c,'; 
+        soql+=' npe01__Amount_Written_Off__c,';
+        soql+=' npe01__Payments_Made__c,';
         soql+=' CampaignId,'; 
         soql+=' Campaign.Name, '; 
         soql+=' RecordType.Name,'; 
@@ -747,7 +783,8 @@ public with sharing class ACC_Giving_SVC {
         soql+='     npe01__Payment_Amount__c,'; 
         soql+='     npe01__Payment_Date__c,'; 
         soql+='     npe01__Paid__c,'; 
-        soql+='     npe01__Scheduled_Date__c'; 
+        soql+='     npe01__Scheduled_Date__c,'; 
+        soql+='     npe01__Written_Off__c'; 
         soql+='     FROM npe01__OppPayment__r'; 
         soql+='     WHERE npe01__Paid__c = true'; 
         soql+='     ORDER BY npe01__Payment_Date__c DESC'; 
@@ -779,6 +816,8 @@ public with sharing class ACC_Giving_SVC {
         soql+=' Opportunity.CampaignId,';
         soql+=' Opportunity.Campaign.Name,';
         soql+= 'Opportunity.npe01__Amount_Outstanding__c,';
+        soql+=' Opportunity.npe01__Amount_Written_Off__c,';
+        soql+=' Opportunity.npe01__Payments_Made__c,';
         soql+=' Opportunity.RecordType.Name';
         soql+=' FROM OpportunityContactRole';
         return soql;
@@ -806,6 +845,8 @@ public with sharing class ACC_Giving_SVC {
         soql+=' npsp__Opportunity__r.CampaignId,';
         soql+=' npsp__Opportunity__r.Campaign.Name,';
         soql+=' npsp__Opportunity__r.npe01__Amount_Outstanding__c,';
+        soql+=' npsp__Opportunity__r.npe01__Amount_Written_Off__c,';
+        soql+=' npsp__Opportunity__r.npe01__Payments_Made__c,';
         soql+=' npsp__Opportunity__r.RecordType.Name,';
         soql+=' npsp__Role__c';
         soql+=' FROM npsp__Account_Soft_Credit__c';
@@ -835,6 +876,8 @@ public with sharing class ACC_Giving_SVC {
         soql+=' npsp__Opportunity__r.CampaignId,';
         soql+=' npsp__Opportunity__r.Campaign.Name,';
         soql+=' npsp__Opportunity__r.npe01__Amount_Outstanding__c,';
+        soql+=' npsp__Opportunity__r.npe01__Amount_Written_Off__c,';
+        soql+=' npsp__Opportunity__r.npe01__Payments_Made__c,';
         soql+=' npsp__Opportunity__r.RecordType.Name';
         soql+=' FROM npsp__Partial_Soft_Credit__c';
         return soql;

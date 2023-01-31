@@ -100,7 +100,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
 	* @param SC schedulable context
 	*/ 
     public void execute(SchedulableContext sc) {
-		Database.executeBatch(new ACC_Segment_BATCH(),50);
+		Database.executeBatch(new OPP_Segment_BATCH(),50);
     }
 
     /*******************************************************************************************************

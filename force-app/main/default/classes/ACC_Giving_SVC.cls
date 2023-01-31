@@ -583,7 +583,7 @@ public with sharing class ACC_Giving_SVC {
             Decimal hardCredit = GiftItem.calculateAmount('won', opp);
             Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', opp);
             Decimal writtenOff = GiftItem.calculateAmount('writtenoff',opp);
-            Decimal committedAmount = hardCredit;
+            Decimal committedAmount = hardCredit - writtenOff;
 			Boolean lost = opp.IsClosed && !opp.IsWon;
 			if(!lost) {
 				AnnualGiftHistory agh = giftHistory.get(giftYear);
@@ -611,7 +611,7 @@ public with sharing class ACC_Giving_SVC {
             Decimal outstanding = GiftItem.calculateAmount('pledged', psc);
             Decimal softCredit = GiftItem.calculateAmount('won', psc);
             Decimal writtenOff = GiftItem.calculateAmount('writtenoff', psc);
-            Decimal committedAmount = softCredit;
+            Decimal committedAmount = softCredit - writtenOff;
             Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', psc);
             AnnualGiftHistory agh = giftHistory.get(giftYear);
             agh.pledgedAmountOutstanding += outstanding;
@@ -640,7 +640,7 @@ public with sharing class ACC_Giving_SVC {
             Decimal outstanding = GiftItem.calculateAmount('pledged', ascr);
             Decimal softCredit = GiftItem.calculateAmount('won', ascr);
             Decimal writtenOff = GiftItem.calculateAmount('writtenoff', ascr);
-            Decimal committedAmount = softCredit;
+            Decimal committedAmount = softCredit - writtenOff;
             Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', ascr);
             agh.pledgedAmountOutstanding += outstanding;
             agh.softCreditAmount += softCredit;
@@ -671,6 +671,7 @@ public with sharing class ACC_Giving_SVC {
 			agh.pledgedAmountOutstanding += crole.Opportunity.npe01__Amount_Outstanding__c;
             agh.writtenOffAmount += crole.Opportunity.npe01__Amount_Written_Off__c;
             agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
+            agh.committedAmount = agh.totalAmount - agh.writtenOffAmount;
             giftHistory.put(giftYear, agh);
 			softCredited.add(crole.OpportunityId);
 			oppsByYear.get(giftYear).add(crole.OpportunityId);
@@ -685,6 +686,7 @@ public with sharing class ACC_Giving_SVC {
         totalRow.committedAmount = 0;
 		totalRow.totalAmount = 0;
         totalRow.receivedAmount = 0;
+        totalRow.numGifts = 0;
 		for(AnnualGiftHistory agh:giftHistory.values()) {
 			agh.numGifts = oppsByYear.containsKey(agh.Year) ? oppsByYear.get(agh.Year).size() : agh.numGifts;
 			totalRow.hardCreditAmount += agh.hardCreditAmount;
@@ -694,6 +696,7 @@ public with sharing class ACC_Giving_SVC {
             totalRow.writtenOffAmount += agh.writtenOffAmount;
 			totalRow.totalAmount += agh.totalAmount;
             totalRow.receivedAmount += agh.receivedAmount;
+            totalRow.numGifts+=agh.numGifts;
 		}
 		giftHistory.put('Total', totalRow);
 		List<AnnualGiftHistory> aghList = new List<AnnualGiftHistory>(giftHistory.values());
@@ -893,6 +896,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AND Role IN :softCreditRoles';
         whereClause+=' AND Opportunity.Amount != null';
         whereClause+=' AND Opportunity.Amount != 0';
+        whereClause+=' AND Opportunity.RecordType.DeveloperName = \'Donation\'';
         whereClause+=' AND (';
         whereClause+='     (Opportunity.IsClosed = TRUE AND Opportunity.IsWon = TRUE)';
         whereClause+='     OR Opportunity.IsClosed = FALSE';
@@ -912,7 +916,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AccountId IN:accountIds';
         whereClause+=' AND Amount != null';
         whereClause+=' AND Amount != 0';
-        whereClause+=' AND RecordType.DeveloperName != \'Planned_Gift\'';
+        whereClause+=' AND RecordType.DeveloperName IN (\'Donation\')';
         whereClause+=' AND (';
         whereClause+='     (IsClosed = TRUE AND IsWon = TRUE)';
         whereClause+='     OR IsClosed = FALSE';
@@ -929,6 +933,7 @@ public with sharing class ACC_Giving_SVC {
         String whereClause =' WHERE npsp__Contact__r.AccountId IN:accountIds';
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';
@@ -946,6 +951,7 @@ public with sharing class ACC_Giving_SVC {
         String whereClause =' WHERE npsp__Account__c IN:accountIds';
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';

@@ -263,6 +263,10 @@ public with sharing class ACC_Segment_SVC {
                 con.put(fld,value);
             }
             for(String fld:segmentFieldDates.values()){
+                Date value = acc.get(fld) != null ? (Date) acc.get(fld) : null;
+                Date existingValue = con.get(fld) != null ? (Date) con.get(fld) : null;
+                if(value != existingValue)
+                    isChange = true;
                 con.put(fld,acc.get(fld));
             }
             if(isChange)
@@ -446,7 +450,7 @@ public with sharing class ACC_Segment_SVC {
         amountByDate.put(lapsedDate,0);
         for(GiftItem giftItem:giftItems){
             Date giftDate = giftItem.lastReceivedDate == null ? giftItem.closeDate : giftItem.lastReceivedDate;
-            Decimal giftAmount = giftItem.totalAmount;
+            Decimal giftAmount = giftItem.committedAmount;
             if(giftAmount == 0 || giftAmount == null || giftDate == null)
                 continue;
 
@@ -587,7 +591,12 @@ public with sharing class ACC_Segment_SVC {
         soql+=' Id, ';
         if(objectType == 'Contact' || objectType == 'Opportunity')
             soql+=' AccountId, ';
+
         soql += String.join(segmentFields, ', ');
+        
+        if(objectType == 'Contact')
+            soql += ', '+String.join(segmentFieldDates.values(), ', ');
+
         if(objectType == 'Contact' || objectType == 'Account')
             soql += ', Major_Donor_Downgrade_Date__c, Mid_Level_Donor_Downgrade_Date__c, First_Recurring_Gift_Date__c, Last_Recurring_Gift_Date__c';
             

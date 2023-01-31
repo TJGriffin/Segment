@@ -63,7 +63,9 @@ public with sharing class OPP_Segment_SVC {
         Map<Id, Account> accounts = new Map<Id, Account>([
             SELECT Id,
             Major_Donor_Downgrade_Date__c,
-            Mid_Level_Donor_Downgrade_Date__c
+            Mid_Level_Donor_Downgrade_Date__c,
+            First_Recurring_Gift_Date__c, 
+            Last_Recurring_Gift_Date__c
             FROM Account
             WHERE Id IN:accountIds
         ]);

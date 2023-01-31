@@ -3,11 +3,12 @@ import wireGetGiftHistory from '@salesforce/apex/ACC_Giving_CTRL.getGiftHistory'
 
 const COLUMNS = [
     {label: 'Year', fieldName: 'year', type: 'text', initialWidth:80},
+    {label: '#', fieldName: 'numGifts', type: 'text', initialWidth:80},
     {label: 'Committed', fieldName: 'committedAmount', type: 'currency'},
     {label: 'Hard Credit', fieldName: 'hardCreditAmount', type: 'currency'},
     {label: 'Soft Credit', fieldName: 'softCreditAmount', type: 'currency'},
     {label: 'Received', fieldName: 'receivedAmount', type: 'currency'},
-    {label: 'Outstanding Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency'},
+    {label: 'Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency'},
     {label: 'Written Off', fieldName: 'writtenOffAmount', type: 'currency'}
 ];
 

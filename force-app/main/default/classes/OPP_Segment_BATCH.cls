@@ -129,6 +129,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
             soqlQuery+='Donor_Segment__c = null AND ';
 
         soqlQuery+=' IsWon=TRUE';
+		soqlQuery+=' AND Amount > 0';
         soqlQuery+=' AND AccountId != null';
         soqlQuery+=' ORDER BY AccountId ASC,CloseDate ASC';
 

@@ -83,7 +83,7 @@ public class GiftItem implements Comparable {
 			get {
 				Decimal totAmt = totalAmount == null ? 0 : totalAmount;
 				Decimal writeOff = writtenOffAmount == null ? 0 : writtenOffAmount;
-				return totalAmt - writeOff;
+				return totAmt - writeOff;
 			}
 			set; 
 		}

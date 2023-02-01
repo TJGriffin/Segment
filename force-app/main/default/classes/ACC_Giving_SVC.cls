@@ -609,8 +609,8 @@ public with sharing class ACC_Giving_SVC {
 				oppsByYear.put(giftYear,new Set<Id>());
 			}
             Decimal outstanding = GiftItem.calculateAmount('pledged', psc);
-            Decimal softCredit = GiftItem.calculateAmount('won', psc);
-            Decimal writtenOff = GiftItem.calculateAmount('writtenoff', psc);
+            Decimal softCredit = GiftItem.calculateAmount('won', psc) == null ? 0 : GiftItem.calculateAmount('won', psc);
+            Decimal writtenOff = GiftItem.calculateAmount('writtenoff', psc) == null ? 0 : GiftItem.calculateAmount('writtenoff', psc);
             Decimal committedAmount = softCredit - writtenOff;
             Decimal uncommittedAmount = GiftItem.calculateAmount('uncommitted', psc);
             AnnualGiftHistory agh = giftHistory.get(giftYear);

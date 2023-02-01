@@ -81,7 +81,9 @@ public class GiftItem implements Comparable {
 		*/
 		@auraEnabled public Decimal committedAmount { 
 			get {
-				return totalAmount - writtenOffAmount;
+				Decimal totAmt = totalAmount == null ? 0 : totalAmount;
+				Decimal writeOff = writtenOffAmount == null ? 0 : writtenOffAmount;
+				return totalAmt - writeOff;
 			}
 			set; 
 		}

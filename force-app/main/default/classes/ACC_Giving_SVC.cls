@@ -48,7 +48,6 @@ public with sharing class ACC_Giving_SVC {
         get {
            return new List<String>{
                 'Soft Credit',
-                'Influencer',
                 'Matched Donor'
            };
         }

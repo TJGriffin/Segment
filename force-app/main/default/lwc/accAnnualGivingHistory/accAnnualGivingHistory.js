@@ -11,13 +11,25 @@ const COLUMNS = [
     {label: 'Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency'},
     {label: 'Written Off', fieldName: 'writtenOffAmount', type: 'currency'}
 ];
+const SHORT_COLUMNS = [
+    {label: 'Year', fieldName: 'year', type: 'text', initialWidth:80},
+    {label: '#', fieldName: 'numGifts', type: 'text', initialWidth:80},
+    {label: 'Committed', fieldName: 'committedAmount', type: 'currency'},
+    {label: 'Received', fieldName: 'receivedAmount', type: 'currency'}
+];
 
 export default class AccAnnualGivingHistory extends LightningElement {
     @api recordId;
     @track showSpinner = true;
     @track giftHistory;
+    @api availWidth;
+
+    get showSkinnyTable(){
+        return typeof this.availWidth !== undefined && this.availWidth != null && this.availWidth < 1650;
+    }
 
     cols = COLUMNS;
+    skinnycols = SHORT_COLUMNS;
 
     @wire(wireGetGiftHistory,{recordId:'$recordId',showWonOnly:true})
     setSummaries(result) {

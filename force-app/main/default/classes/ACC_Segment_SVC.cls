@@ -486,9 +486,7 @@ public with sharing class ACC_Segment_SVC {
             }
             Decimal amountThreshold = statusRules.get(levelName).get(timeAgo);
             Decimal maxAmount = 0;
-            if(levelName.contains('Sustainer') || levelName.contains('Major')){
-                maxAmount = 0;
-            } else if(levelName.contains('Mid')){
+            if(levelName.contains('Mid')){
                 maxAmount = 24999.99;
             } else {
                 maxAmount = 0;

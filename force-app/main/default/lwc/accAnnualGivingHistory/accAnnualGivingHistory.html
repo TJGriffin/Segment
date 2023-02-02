@@ -7,13 +7,24 @@
             <lightning-layout-item class="slds-card_boundary slds-m-around_small">
                 <lightning-card title="Annual Giving Summary">
                     <div class="slds-p-around_small">
-                        <lightning-datatable 
-                            key-field="year"
-                            data={giftHistory}
-                            columns={cols}
-                            hide-checkbox-column="true"
-                            class="slds-table_striped"
-                        ></lightning-datatable>
+                        <template if:false={showSkinnyTable}>
+                            <lightning-datatable 
+                                key-field="year"
+                                data={giftHistory}
+                                columns={cols}
+                                hide-checkbox-column="true"
+                                class="slds-table_striped"
+                            ></lightning-datatable>
+                        </template>
+                        <template if:true={showSkinnyTable}>
+                            <lightning-datatable 
+                                key-field="year"
+                                data={giftHistory}
+                                columns={skinnycols}
+                                hide-checkbox-column="true"
+                                class="slds-table_striped"
+                            ></lightning-datatable>
+                        </template>
                     </div> 
                 </lightning-card>
             </lightning-layout-item>

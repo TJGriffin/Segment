@@ -16,23 +16,37 @@
                 </lightning-layout-item>
             </template>
         </lightning-layout>           
-        
-        <lightning-layout multiple-rows="true" pull-to-boundary="small">
-            <lightning-layout-item class="slds-card_boundary slds-m-around_small">
-                <lightning-card title="Giving">
-                    <!--<lightning-input type="checkbox" checked={showWon} onclick={handleCheckbox} slot="actions" label="Show won gifts only"></lightning-input>-->
-                        <lightning-datatable 
-                            key-field="id"
-                            data={data}
-                            columns={cols}
-                            hide-checkbox-column = "true"
-                            class="slds-table_striped"
-                            sorted-by={sortBy}
-                            sorted-direction={sortDirection}
-                            onsort={doSorting}
-                        ></lightning-datatable>
-                </lightning-card>
-            </lightning-layout-item>
-        </lightning-layout>
+        <div class="gifts">
+            <lightning-layout multiple-rows="true" pull-to-boundary="small">
+                <lightning-layout-item class="slds-card_boundary slds-m-around_small">
+                    <lightning-card title="Giving">
+                        <template if:true={showSkinnyTable}>
+                            <lightning-datatable 
+                                key-field="id"
+                                data={data}
+                                columns={skinnycols}
+                                hide-checkbox-column = "true"
+                                class="slds-table_striped"
+                                sorted-by={sortBy}
+                                sorted-direction={sortDirection}
+                                onsort={doSorting}
+                            ></lightning-datatable>
+                        </template>
+                        <template if:false={showSkinnyTable}>
+                            <lightning-datatable 
+                                key-field="id"
+                                data={data}
+                                columns={cols}
+                                hide-checkbox-column = "true"
+                                class="slds-table_striped"
+                                sorted-by={sortBy}
+                                sorted-direction={sortDirection}
+                                onsort={doSorting}
+                            ></lightning-datatable>
+                        </template>
+                    </lightning-card>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
     </template>
 </template>

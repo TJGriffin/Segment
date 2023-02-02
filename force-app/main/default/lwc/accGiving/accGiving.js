@@ -2,6 +2,28 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { refreshApex } from '@salesforce/apex';
 import wireGetGiftItems from '@salesforce/apex/ACC_Giving_CTRL.getGiftItems';
 
+const SHORT_COLS = [
+    {label: 'Name', fieldName: 'link', type: 'url', typeAttributes: {
+            label : {fieldName: 'Name'}
+        },initialWidth:200},
+    /* {label: 'Campaign', fieldName:'campaignName',type:'text',sortable:'true',initialWidth:50},
+     {label: 'Type', fieldName:'recordType',type:'text',sortable:'true',initialWidth:160},*/
+    {label: 'Status', fieldName: 'StageName', type: 'text', sortable:'true', initialWidth:120},
+    {label: 'First Date', fieldName: 'closeDate', type: 'date-local',typeAttributes:{
+        month:"2-digit",
+        day: "2-digit"
+        },
+        sortable:'true', initialWidth:120
+    },
+    {label: 'Last Date', fieldName: 'lastReceivedDate', type: 'date-local',typeAttributes:{
+        month:"2-digit",
+        day: "2-digit"
+        },
+        sortable:'true', initialWidth:120
+    },
+    {label: 'Received', fieldName: 'totalAmount', type: 'currency',sortable:'true', initialWidth:120},
+    {label: 'Gift Total', fieldName: 'oppAmount', type: 'currency',sortable:'true', initialWidth:120}
+];
 const COLUMNS = [
     {label: 'Name', fieldName: 'link', type: 'url', typeAttributes: {
             label : {fieldName: 'Name'}
@@ -29,6 +51,7 @@ const COLUMNS = [
 
 export default class AccGiving extends LightningElement {
     @api recordId;
+    @api flexipageRegionWidth;
     @track showSpinner = true;
     @track data;
     @api showWon;
@@ -36,6 +59,11 @@ export default class AccGiving extends LightningElement {
     @track sortDirection;
     @track firstGift;
     @track lastGift;
+    @api availWidth;
+
+    get showSkinnyTable(){
+        return typeof this.availWidth !== undefined && this.availWidth != null && this.availWidth < 1650;
+    }
 
     connectedCallback(){
         this.showWon = typeof this.showWon === undefined || this.showWon == null ? true : this.showWon;
@@ -46,6 +74,7 @@ export default class AccGiving extends LightningElement {
     }
 
     cols = COLUMNS;
+    skinnycols = SHORT_COLS;
 
     handleCheckbox(event){
         this.showSpinner = true;

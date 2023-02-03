@@ -132,7 +132,8 @@ public with sharing class ACC_Giving_SVC {
 	* @return Map<Id,List<OpportunityContactRole>>
 	********************************************************************************************************/
     public static Map<Id,List<OpportunityContactRole>> getSoftCreditsFromAccountIds(Set<Id> accountIds){
-        List<String> softCreditRoles = softCreditRoles;
+        List<String> softCreditRoles = ACC_Giving_SVC.softCreditRoles;
+
         Map<Id, List<OpportunityContactRole>> rolesByAccount = new Map<Id, List<OpportunityContactRole>>();
         String soqlQuery = getSoftCreditSoql();
         soqlQuery+=getSoftCreditWhereClause(accountIds);
@@ -296,7 +297,9 @@ public with sharing class ACC_Giving_SVC {
 	* @return String
 	********************************************************************************************************/
     public static List<GiftItem> getGiftItems(List<Opportunity> oppList, List<OpportunityContactRole> croleList, List<npsp__Partial_Soft_Credit__c> pscList, List<npsp__Account_Soft_Credit__c> ascList, Boolean showWonOnly){
-		/*******************************************************************************************************
+		system.debug('counts: '+oppList.size()+'/'+croleList.size()+'/'+pscList.size()+'/'+ascList.size());
+        
+        /*******************************************************************************************************
 		* @description count of giftItems
 		*/
         Integer giftCount = 0;
@@ -510,6 +513,8 @@ public with sharing class ACC_Giving_SVC {
 		* @description List of partial soft credits based on account id
 		*/  
 		Map<Id, List<npsp__Account_Soft_Credit__c>> ascListMap = getAccountSoftCreditsFromAccountIds(accountIds);
+
+        system.debug('record counts: '+oppListMap.size()+'/'+croleListMap.size()+'/'+pscListMap.size()+'/'+ascListMap.size());
 
         for(Id accountId:accountIds){
             List<Opportunity> oppList = oppListMap.containsKey(accountId) ? oppListMap.get(accountId) : new List<Opportunity>();
@@ -892,7 +897,7 @@ public with sharing class ACC_Giving_SVC {
     public static String getSoftCreditWhereClause(Set<Id> accountIds){
         String whereClause =' WHERE ';
         whereClause+=' Contact.AccountId IN:accountIds';
-        whereClause+=' AND Role IN :softCreditRoles';
+        whereClause+=' AND Role IN:softCreditRoles';
         whereClause+=' AND Opportunity.Amount != null';
         whereClause+=' AND Opportunity.Amount != 0';
         whereClause+=' AND Opportunity.RecordType.DeveloperName = \'Donation\'';
@@ -932,6 +937,7 @@ public with sharing class ACC_Giving_SVC {
         String whereClause =' WHERE npsp__Contact__r.AccountId IN:accountIds';
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
+        whereClause+=' AND npsp__Role_Name__c IN:softCreditRoles';
         whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';

@@ -320,7 +320,7 @@ private class ACC_Segment_TEST {
         String soql = ACC_Segment_SVC.getSegmentFieldSoql('Account');
         List<Account> accounts =  (List<Account>) Database.query(soql);
         for(Account account:accounts){
-           account.Mid_Level_Donor_Status__c = 'Former'; 
+           account.Mid_Level_Donor_Status__c = 'Lapsed'; 
         }
         test.startTest();
         update accounts;

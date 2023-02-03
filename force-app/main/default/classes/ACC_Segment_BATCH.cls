@@ -14,7 +14,8 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 		ACCOUNT_SC, // daily run for contact partial soft credits
 		ACCOUNT_ALL, // run for all accounts
 		ACCOUNT_ANNIV, // run for accounts on their anniversary dates
-		ACCOUNT // daily run for accounts
+		ACCOUNT, // daily run for accounts
+		ACCOUNT_PSC
 	}
 
 	/**
@@ -146,7 +147,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 						accounts.put(accountId, new Account(Id=accountId));
 				}
 			}
-			when CONTACT_PSC {
+			when CONTACT_PSC,ACCOUNT_PSC {
 				for(npsp__Partial_Soft_Credit__c psc:(List<npsp__Partial_Soft_Credit__c>) scope){
 					Id accountId = psc.npsp__Contact__r.AccountId;
 					if(accountId != null)
@@ -227,7 +228,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 			when CONTACT_SC {
 				soql = 'SELECT ContactId, Contact.AccountId, Contact.Account.Major_Donor_Downgrade_Date__c, Contact.Account.Mid_Level_Donor_Downgrade_Date__c, Contact.Account.First_Recurring_Gift_Date__c, Contact.Account.Last_Recurring_Gift_Date__c FROM OpportunityContactRole';
 			}
-			when CONTACT_PSC {
+			when CONTACT_PSC,ACCOUNT_PSC {
 				soql = 'SELECT npsp__Contact__c, npsp__Contact__r.AccountId, npsp__Contact__r.Account.Major_Donor_Downgrade_Date__c, npsp__Contact__r.Account.Mid_Level_Donor_Downgrade_Date__c FROM npsp__Partial_Soft_Credit__c';
 			}
 

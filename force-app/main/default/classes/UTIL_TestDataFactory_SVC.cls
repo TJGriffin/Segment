@@ -10,7 +10,7 @@ public with sharing class UTIL_TestDataFactory_SVC {
                 5 => 'Active Donor',
                 6 => 'Lapsed Sustainer',
                 7 => 'Active Sustainer',
-                8 => 'Former Major Donor',
+                8 => 'Deep Lapsed Major Donor',
                 9 => 'na',
                 10 => 'na'
             };

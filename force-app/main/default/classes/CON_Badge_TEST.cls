@@ -16,13 +16,14 @@ private class CON_Badge_TEST {
         List<npe5__Affiliation__c> affs = new List<npe5__Affiliation__c>();
         Integer i=0;
         for(Contact con:cons){
-            
+            String status = i == 0 ? 'Former' : 'Current';
             affs.add(new npe5__Affiliation__c(
                 npe5__Contact__c = con.Id,
                 npe5__Organization__c = acc.Id,
                 trac_Role__c = 'Board Member',
-                npe5__Status__c = 'Current'
+                npe5__Status__c = status
             ));
+
             
             i++;
         }

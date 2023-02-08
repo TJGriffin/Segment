@@ -35,7 +35,7 @@ public with sharing class CON_Badge_CTRL {
         get {
             if(roles == null){
                 // add the roles that should display as badges here
-                roles = new List<String>{};
+                roles = new List<String>{'Board Member'};
             }
             return roles;
         }       

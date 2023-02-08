@@ -20,7 +20,7 @@ private class CON_Badge_TEST {
             affs.add(new npe5__Affiliation__c(
                 npe5__Contact__c = con.Id,
                 npe5__Organization__c = acc.Id,
-                trac_Role__c = 'Test',
+                trac_Role__c = 'Board Member',
                 npe5__Status__c = 'Current'
             ));
             

@@ -159,8 +159,31 @@ private class OPP_Segment_TEST {
     }
 
     @isTest
-    
-    static void testService(){
-        
+    static void testBatch1(){
+        test.startTest();
+        database.executeBatch(new OPP_Segment_BATCH());
+        test.stopTest();
     }
+
+    @isTest
+    static void testBatch2(){
+        Map<Id, Account> accMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        test.startTest();
+        database.executeBatch(new OPP_Segment_BATCH(accMap.keyset()));
+        test.stopTest();
+    }
+    @isTest
+    static void testBatch3(){
+        Map<Id, Account> accMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        test.startTest();
+        database.executeBatch(new OPP_Segment_BATCH(accMap.keyset(),true));
+        test.stopTest();
+    }
+    @isTest
+    static void testBatch4(){
+        test.startTest();
+        database.executeBatch(new OPP_Segment_BATCH(true));
+        test.stopTest();
+    }
+
 }

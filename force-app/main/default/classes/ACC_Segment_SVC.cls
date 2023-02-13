@@ -19,18 +19,46 @@ public with sharing class ACC_Segment_SVC {
             deepLapsedSustainer = value.addDays(-365);
         }
     }
+
+    /****
+     * @description the effective date to run the segment process on
+     */
     @TestVisible
     private Date effectiveDate;
+
+    /****
+     * @description the first date
+     */
     @TestVisible
     private Date firstDate;
+
+    /****
+     * @description the extended lapsed date for the given effective date
+     */
     @TestVisible
     private Date extendedLapsedDate;
+
+    /****
+     * @description the deep lasped date for the given effective date
+     */
     @TestVisible
     private Date deepLapsedDate;
+
+    /****
+     * @description the lapsed date for the given effective date
+     */
     @TestVisible
     private Date lapsedDate;
+
+    /****
+     * @description the sustainer lapsed date for the given effective date
+     */
     @TestVisible
     private Date lapsedSustainer;
+
+    /****
+     * @description the deep sustainer lapsed date for the given effective date
+     */
     @TestVisible
     private Date deepLapsedSustainer;
 
@@ -38,16 +66,16 @@ public with sharing class ACC_Segment_SVC {
      * @description a collection of account ids to segment
      */
     public Map<Id, Account> accountMap {get;set;}
+
     /****
      * @description a collection of failed account ids
      */
     public Set<Id> failedIds;
+
     /****
      * @description map of a collection of GiftItems keyed by account id
      */
     Map<Id,List<GiftItem>> giftItemsByAccount {get;set;}
-
-
 
 	/*******************************************************************************************************
 	* @description constructor
@@ -84,16 +112,23 @@ public with sharing class ACC_Segment_SVC {
     * @return void
 	********************************************************************************************************/
     public void updateAccounts(){
-        update this.accountMap.values();
-        /*
+
+        Set<Id> failures = new Set<Id>();
+
         try {
-            update this.accountMap.values();
+           List<Database.SaveResult> saveResults =  Database.update(this.accountMap.values(),false);
+           for(Database.SaveResult saveResult:saveResults){
+                if(!sr.isSuccess())
+                    failures.add(sr.getId());
+           }
         } catch(Exception e){
             system.debug(e.getMessage());
-            this.failedIds = new Set<Id>();
-            this.failedIds.addAll(this.accountMap.keyset());
+            failures.addAll(this.accountMap.keyset());
         }
-        */
+
+        if(failures.size() > 0){
+            this.failedIds = failures;
+        }
     }	
     /*******************************************************************************************************
 	* @description processes accounts and contacts on before to set the Donor Segment

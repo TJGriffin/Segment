@@ -77,6 +77,11 @@
                 <label>Former Sustainer</label>
             </value>
             <value>
+                <fullName>Deep Lapsed Sustainer</fullName>
+                <default>false</default>
+                <label>Deep Lapsed Sustainer</label>
+            </value>
+            <value>
                 <fullName>Active Donor</fullName>
                 <default>false</default>
                 <label>Active Donor</label>

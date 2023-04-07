@@ -18,3 +18,6 @@
     --slds-c-badge-color-background:#00479C;
     --slds-c-badge-text-color:#fff;
 }
+.spacer {
+    margin-right:2px;
+}

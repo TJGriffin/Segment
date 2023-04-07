@@ -6,10 +6,10 @@
                     <c-con-badge label={levelName} class-name={className}></c-con-badge>
                 </template>
                 <template if:true={deceasedStatus}>
-                    <lightning-badge label={deceasedStatus} class="slds-theme_error"></lightning-badge>
+                    <c-con-badge label={deceasedStatus} class-name="slds-theme_error"></c-con-badge>
                 </template>
                 <template if:true={dncStatus}>
-                    <lightning-badge label={dncStatus} class="slds-theme_error"></lightning-badge>
+                    <c-con-badge label={dncStatus} class-name="slds-theme_error"></c-con-badge>
                 </template>
                 <template if:true={labels}>
                     <template for:each={labels} for:item="label">

@@ -1,24 +1,28 @@
 <template>
     <template if:true={contact}>
-        <lightning-layout>
-            <lightning-layout-item padding="around-small">
-                <template if:true={levelName}>
+        <lightning-layout>            
+            <template if:true={levelName}>
+                <lightning-layout-item>
                     <c-con-badge label={levelName} class-name={className}></c-con-badge>
-                </template>
-                <template if:true={deceasedStatus}>
+                </lightning-layout-item>
+            </template>
+            <template if:true={deceasedStatus}>
+                <lightning-layout-item>
                     <c-con-badge label={deceasedStatus} class-name="slds-theme_error"></c-con-badge>
-                </template>
-                <template if:true={dncStatus}>
+                </lightning-layout-item>
+            </template>
+            <template if:true={dncStatus}>
+                <lightning-layout-item>
                     <c-con-badge label={dncStatus} class-name="slds-theme_error"></c-con-badge>
+                </lightning-layout-item>
+            </template>
+            <template if:true={labels}>
+                <template for:each={labels} for:item="label">
+                    <lightning-layout-item key={label}>
+                        <c-con-badge label={label} ></c-con-badge>
+                    </lightning-layout-item>
                 </template>
-                <template if:true={labels}>
-                    <template for:each={labels} for:item="label">
-                        <lightning-layout-item padding="around-small" key={label}>
-                            <c-con-badge label={label} ></c-con-badge>
-                        </lightning-layout-item>
-                    </template>
-                </template>     
-            </lightning-layout-item>
+            </template>     
         </lightning-layout>
     </template>   
 </template>

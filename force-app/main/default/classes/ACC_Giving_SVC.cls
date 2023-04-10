@@ -297,12 +297,6 @@ public with sharing class ACC_Giving_SVC {
 	* @return String
 	********************************************************************************************************/
     public static List<GiftItem> getGiftItems(List<Opportunity> oppList, List<OpportunityContactRole> croleList, List<npsp__Partial_Soft_Credit__c> pscList, List<npsp__Account_Soft_Credit__c> ascList, Boolean showWonOnly){
-		system.debug('counts: '+oppList.size()+'/'+croleList.size()+'/'+pscList.size()+'/'+ascList.size());
-        
-        /*******************************************************************************************************
-		* @description count of giftItems
-		*/
-        Integer giftCount = 0;
 
 		/*******************************************************************************************************
 		* @description gift history to return
@@ -342,7 +336,7 @@ public with sharing class ACC_Giving_SVC {
                         gi.pledgedAmountOutstanding = oppOutstanding; 
                         oppOutstandingMap.put(opp.Id,oppOutstanding);
                     }
-                    giftCount++;
+                    
 
                     if(opp.isWon && showWonOnly){
                         hardCreditGiftItems.put(gi.recordId,gi);
@@ -355,6 +349,7 @@ public with sharing class ACC_Giving_SVC {
                 String recurringName = opp.npe03__Recurring_Donation__r.Name;
                 String recurringStage = opp.npe03__Recurring_Donation__r.npsp__Status__c;
                 String recurringId = opp.npe03__Recurring_Donation__c;
+                List<giftPayment> pmts = new List<giftPayment>();
                 GiftItem gi = new GiftItem(opp,isRecurring);
                 gi.oppAmount = isRecurring ? gi.TotalAmount + gi.pledgedAmountOutstanding : opp.Amount;
                 gi.recordId = isRecurring ? recurringId : opp.Id;
@@ -362,7 +357,10 @@ public with sharing class ACC_Giving_SVC {
                 gi.Name = isRecurring ? recurringName : opp.Name;
                 gi.oppAmount = opp.Amount;
                 gi.TotalAmount = gi.HardCreditAmount;
-            
+                if(isRecurring){
+                    pmts.add(new giftPayment(opp));
+                }        
+        
                 if(!hardCreditGiftItems.containsKey(gi.recordId)) {
                     hardCreditGiftItems.put(gi.recordId, gi);
                 } else {
@@ -371,6 +369,9 @@ public with sharing class ACC_Giving_SVC {
                     gi.lastReceivedDate = hardCreditGiftItems.get(gi.recordId).lastReceivedDate < gi.lastReceivedDate ? gi.lastReceivedDate : hardCreditGiftItems.get(gi.recordId).lastReceivedDate;
                     gi.TotalAmount = gi.HardCreditAmount;
                     gi.oppAmount = isRecurring ? gi.TotalAmount + gi.pledgedAmountOutstanding : opp.Amount;
+                    gi.payments = hardCreditGiftItems.get(gi.recordId).payments;
+                    gi.payments = gi.payments == null ? new List<giftPayment>() : gi.payments;
+                    gi.payments.addAll(pmts);
 
                     if(opp.isWon && showWonOnly){
                         hardCreditGiftItems.put(gi.recordId,gi); 
@@ -379,8 +380,7 @@ public with sharing class ACC_Giving_SVC {
                     }
                 
                 }
-                
-                giftCount++;        
+                     
             }
         }
         for(OpportunityContactRole crole : crolelist) {
@@ -388,7 +388,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(crole);
-            giftCount++;
 
             if(crole.Opportunity.IsWon && showWonOnly) {
                 softCreditGiftItems.put(gi.recordId, gi);
@@ -401,7 +400,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(psc);
-            giftCount++;
 
             if(psc.npsp__Opportunity__r.isWon && showWonOnly){
                 softCreditGiftItems.put(gi.recordId, gi);
@@ -414,7 +412,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(ascr);
-            giftCount++;
 
             if(ascr.npsp__Opportunity__r.isWon && showWonOnly){
                 softCreditGiftItems.put(gi.recordId, gi);

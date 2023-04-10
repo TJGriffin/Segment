@@ -150,6 +150,11 @@ public class GiftItem implements Comparable {
 		*/
 		@auraEnabled public String Name { get; set; }
 
+		/*******************************************************************************************************
+		* @description the Name of the Gift
+		*/
+		@auraEnabled public List<giftPayment> payments { get; set; }
+
 
         public GiftItem(Opportunity opp, Boolean isRecurring){
             this.isPmt = false;
@@ -201,6 +206,8 @@ public class GiftItem implements Comparable {
             this.recordId= pmt.Id;
 			this.opportunityId = opp.Id;
             this.StageName = opp.StageName;
+			giftPayment gPayment = new giftPayment(pmt);
+			this.payments = new List<giftPayment>{gPayment};
         }
 
         public GiftItem(OpportunityContactRole cRole){

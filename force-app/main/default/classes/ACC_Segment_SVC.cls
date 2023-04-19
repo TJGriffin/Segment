@@ -77,6 +77,9 @@ public with sharing class ACC_Segment_SVC {
      */
     Map<Id,List<GiftItem>> giftItemsByAccount {get;set;}
 
+    public ACC_Segment_SVC(){
+        this.processDate = Date.Today();
+    }
 	/*******************************************************************************************************
 	* @description constructor
 	* @param accounts
@@ -118,8 +121,8 @@ public with sharing class ACC_Segment_SVC {
         try {
            List<Database.SaveResult> saveResults =  Database.update(this.accountMap.values(),false);
            for(Database.SaveResult saveResult:saveResults){
-                if(!sr.isSuccess())
-                    failures.add(sr.getId());
+                if(!saveResult.isSuccess())
+                    failures.add(saveResult.getId());
            }
         } catch(Exception e){
             system.debug(e.getMessage());

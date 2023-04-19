@@ -27,7 +27,7 @@ public with sharing class giftPayment {
 
     @auraEnabled public Decimal amount {get;set;}
 
-    @auraEnabled public Boolan writtenOff {get;set;}
+    @auraEnabled public Boolean writtenOff {get;set;}
 
     public giftPayment(npe01__OppPayment__c pmt){
         this.recordId = pmt.Id;

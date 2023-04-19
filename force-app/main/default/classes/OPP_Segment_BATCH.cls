@@ -131,6 +131,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
         soqlQuery+=' IsWon=TRUE';
 		soqlQuery+=' AND Amount > 0';
         soqlQuery+=' AND AccountId != null';
+		soqlQuery+=' AND Account.Name != \'Anonymous Household\'';
         soqlQuery+=' ORDER BY AccountId ASC,CloseDate ASC';
 
         return soqlQuery;

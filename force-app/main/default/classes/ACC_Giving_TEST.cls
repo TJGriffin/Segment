@@ -261,4 +261,16 @@ private class ACC_Giving_TEST {
         List<AnnualGiftHistory__c> agh = [SELECT Id FROM AnnualGiftHistory__c];
         system.assert(agh.size()>0);
     }
+
+    @isTest
+    static void testGiftPayment(){
+        List<giftPayment> gis = new List<giftPayment>();
+        List<Opportunity> opps = [SELECT Id,CloseDate,IsWon,Amount FROM Opportunity];
+        for(Opportunity opp:opps){
+            gis.add(new giftPayment(opp));
+        }
+        system.assertEquals(gis.size(),opps.size());
+        system.assert(gis[0].objectType.equalsIgnoreCase('opportunity'));
+
+    }
 }

@@ -6,4 +6,5 @@
     <label>Use Fiscal Year</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>
+    <inlineHelpText>Used to calculate Annual Giving Histories based on the fiscal year defined in company settings.</inlineHelpText>
 </CustomField>

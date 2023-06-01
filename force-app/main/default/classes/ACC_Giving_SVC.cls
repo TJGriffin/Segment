@@ -6,6 +6,8 @@
 */
 public with sharing class ACC_Giving_SVC {
 
+
+
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id
 	* @param recordId
@@ -22,6 +24,7 @@ public with sharing class ACC_Giving_SVC {
         }
         set;
     }
+
 
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id
@@ -40,16 +43,46 @@ public with sharing class ACC_Giving_SVC {
     }
 
 	/*******************************************************************************************************
-	* @description gets the account id of a record Id
-	* @param recordId
-	* @return Id  
+	* @description gets the list of record types that should be considered when processing segmentation
+	* @return List<String>
+	********************************************************************************************************/
+    public static List<String> recordTypesForProcessing { 
+        get {
+            if(recordTypesForProcessing == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                recordTypesForProcessing = dss == null ? new List<String>{'Donation'} : dss.OpportunityRecordTypeNames__c;
+            }
+            return recordTypesForProcessing;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the list of Account names that should be suppressed from segment processing
+	* @return List<String>
+	********************************************************************************************************/
+    public static List<String> supppressAccountNames { 
+        get {
+            if(supppressAccountNames == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                supppressAccountNames = dss == null ? new List<String>{'Anonymous Household','Anonymous Donor Household'} : dss.HouseholdNamesToSuppress__c;
+            }
+            return supppressAccountNames;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the list of roles to incorporate for soft credits
+	* @param List<String>
 	********************************************************************************************************/
     public static List<String> softCreditRoles { 
         get {
-           return new List<String>{
-                'Soft Credit',
-                'Matched Donor'
-           };
+            if(softCreditRoles == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                softCreditRoles = dss == null ? new List<String>{'Soft Credit','Matched Donor'} : dss.HouseholdNamesToSuppress__c;
+            }
+            return softCreditRoles;
         }
         set;
     } 
@@ -897,7 +930,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AND Role IN:softCreditRoles';
         whereClause+=' AND Opportunity.Amount != null';
         whereClause+=' AND Opportunity.Amount != 0';
-        whereClause+=' AND Opportunity.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND Opportunity.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (Opportunity.IsClosed = TRUE AND Opportunity.IsWon = TRUE)';
         whereClause+='     OR Opportunity.IsClosed = FALSE';
@@ -917,7 +950,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AccountId IN:accountIds';
         whereClause+=' AND Amount != null';
         whereClause+=' AND Amount != 0';
-        whereClause+=' AND RecordType.DeveloperName IN (\'Donation\')';
+        whereClause+=' AND RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (IsClosed = TRUE AND IsWon = TRUE)';
         whereClause+='     OR IsClosed = FALSE';
@@ -935,7 +968,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
         whereClause+=' AND npsp__Role_Name__c IN:softCreditRoles';
-        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';
@@ -953,7 +986,7 @@ public with sharing class ACC_Giving_SVC {
         String whereClause =' WHERE npsp__Account__c IN:accountIds';
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
-        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';

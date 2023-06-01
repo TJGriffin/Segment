@@ -18,6 +18,19 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 		ACCOUNT_PSC
 	}
 
+	public static List<String> anonHouseholds  {
+		get {
+			if(anonHouseholds == null){
+				anonHouseholds = new List<String>{
+					'Anonymous Donor Household',
+					'Anonymous Household',
+					'Anonymous Anonymous Household'
+				};
+			}
+			return anonHouseholds;
+		}
+		set;
+	}
 	/**
 	* @description the mode to run the batch 
 	*/ 
@@ -248,11 +261,13 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 			when ACCOUNT,null {
 				soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';
 				soqlQuery += 'ID IN (SELECT AccountId FROM Opportunity WHERE LastModifiedDate >= LAST_N_DAYS:2)';
+				soqlQuery += ' AND Name NOT IN:anonHouseholds';
 			}
 			when ACCOUNT_ALL {
 				if(isMissing){
 					soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';
 					soqlQuery += 'Donor_Segment__c = null';
+					soqlQuery += ' AND Name NOT IN:anonHouseholds';
 				}
 				if(accountIds != null && accountIds.size()>0){
 					soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';
@@ -262,6 +277,7 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 			when ACCOUNT_ANNIV {
 				soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';
 				soqlQuery += 'Status_Anniversary__c = true';
+				soqlQuery += ' AND Name NOT IN:anonHouseholds';
 			}
 			when ACCOUNT_SC {
 				soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';

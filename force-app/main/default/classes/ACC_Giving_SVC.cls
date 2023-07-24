@@ -35,7 +35,7 @@ public with sharing class ACC_Giving_SVC {
         get {
             if(useFiscalYear == null) {
                 DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
-                useFiscalYear = dss == null ? false : dss.UseFiscalYear__c;
+                useFiscalYear = dss.UseFiscalYear__c == null ? false : dss.UseFiscalYear__c;
             }
             return useFiscalYear;
         }
@@ -50,7 +50,12 @@ public with sharing class ACC_Giving_SVC {
         get {
             if(recordTypesForProcessing == null) {
                 DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
-                recordTypesForProcessing = dss == null ? new List<String>{'Donation'} : dss.OpportunityRecordTypeNames__c;
+                if(String.isBlank(dss.OpportunityRecordTypeNames__c)){
+                    recordTypesForProcessing = new List<String>{'Donation'};
+                } else {
+                    String settings = dss.OpportunityRecordTypeNames__c;
+                    recordTypesForProcessing = getListFromCommaDelimitedString(settings);
+                }
             }
             return recordTypesForProcessing;
         }
@@ -65,8 +70,13 @@ public with sharing class ACC_Giving_SVC {
         get {
             if(supppressAccountNames == null) {
                 DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
-                supppressAccountNames = dss == null ? new List<String>{'Anonymous Household','Anonymous Donor Household'} : dss.HouseholdNamesToSuppress__c;
-            }
+                if(String.isBlank(dss.HouseholdNamesToSuppress__c)){
+                    supppressAccountNames = new List<String>{'Anonymous Household','Anonymous Donor Household'};
+                } else {
+                    String settings = dss.HouseholdNamesToSuppress__c;
+                    supppressAccountNames = getListFromCommaDelimitedString(settings);
+                } 
+            }          
             return supppressAccountNames;
         }
         set;
@@ -80,12 +90,33 @@ public with sharing class ACC_Giving_SVC {
         get {
             if(softCreditRoles == null) {
                 DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
-                softCreditRoles = dss == null ? new List<String>{'Soft Credit','Matched Donor'} : dss.HouseholdNamesToSuppress__c;
+                if(String.isBlank(dss.SoftCreditRoleNames__c)){
+                    softCreditRoles = new List<String>{'Soft Credit','Matched Donor'};
+                } else {
+                    String settings = dss.SoftCreditRoleNames__c;
+                    softCreditRoles = getListFromCommaDelimitedString(settings);
+                }  
             }
             return softCreditRoles;
         }
         set;
     } 
+
+	/*******************************************************************************************************
+	* @description gets a List<String> from a comma delimited String
+	* @param value
+	* @return List<String>  
+	********************************************************************************************************/
+    public static List<String> getListFromCommaDelimitedString(String value){
+        List<String> values = new List<String>();
+        values = String.isNotBlank(value) && value.contains(',') ? value.split(',') : new List<String>{value};
+        List<String> trimmedStrings = new List<String>();
+        for(String listValue:values){
+            listValue = listValue.trim();
+            trimmedStrings.add(listValue);
+        }
+        return trimmedStrings;
+    }
 
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id

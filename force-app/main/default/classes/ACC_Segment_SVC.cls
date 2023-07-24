@@ -360,7 +360,7 @@ public with sharing class ACC_Segment_SVC {
                         account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
                     } else {
                         account.put('Sustainer_Status__c' ,'Deep Lapsed');
-                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
+                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(90));
                     }
                 }
                 updatedAccounts.put(accountId,account);

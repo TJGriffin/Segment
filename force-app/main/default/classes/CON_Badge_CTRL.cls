@@ -53,16 +53,16 @@ public with sharing class CON_Badge_CTRL {
         for(npe5__Affiliation__c aff:[
             SELECT 
                 Id,
-                trac_Role__c,
+                npe5__Role__c,
                 npe5__Status__c
             FROM npe5__Affiliation__c 
             WHERE npe5__Contact__c IN:contactIds
-            AND trac_Role__c IN:roles]){
+            AND npe5__Role__c IN:roles]){
                 if(aff.npe5__Status__c == 'Former'
-                    && !labelStatus.containsKey(aff.trac_Role__c)) {
-                        labelStatus.put(aff.trac_Role__c, aff.npe5__Status__c);
+                    && !labelStatus.containsKey(aff.npe5__Role__c)) {
+                        labelStatus.put(aff.npe5__Role__c, aff.npe5__Status__c);
                     } else {
-                        labelStatus.put(aff.trac_Role__c, aff.npe5__Status__c);
+                        labelStatus.put(aff.npe5__Role__c, aff.npe5__Status__c);
                     }
             }
         Set<String> labels = new Set<String>();

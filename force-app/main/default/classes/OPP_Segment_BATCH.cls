@@ -6,6 +6,13 @@
 */
 public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObject>, Database.Stateful, Schedulable {
 
+	private List<String> suppressAccountNames {
+		get {
+			return ACC_Giving_SVC.supppressAccountNames;
+		}
+		set;
+	}
+
 	/**
 	* @description a collection of Ids to run the rollup for
 	*/  
@@ -66,6 +73,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
 	* @return Querylocator the scope of the batch
 	*/  	 
 	public Database.QueryLocator start(Database.BatchableContext BC) {
+
         accountIds = accountIds == null ? new Set<Id>() : accountIds;
 		failedIds = failedIds == null ? new Set<Id>() : failedIds;
 		String soqlQuery = getSOQL();
@@ -121,6 +129,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
 	* @description get soql string
 	*/
     public static String getWhereClause(String soqlQuery, Boolean isMissing, Set<Id> accountIds){
+	   
        soqlQuery+=' WHERE ';
        if(accountIds.size() > 0){
             soqlQuery+='AccountId IN:accountIds AND ';
@@ -131,6 +140,7 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
         soqlQuery+=' IsWon=TRUE';
 		soqlQuery+=' AND Amount > 0';
         soqlQuery+=' AND AccountId != null';
+		soqlQuery+=' AND Account.Name NOT IN:supppressAccountNames';
         soqlQuery+=' ORDER BY AccountId ASC,CloseDate ASC';
 
         return soqlQuery;

@@ -77,6 +77,9 @@ public with sharing class ACC_Segment_SVC {
      */
     Map<Id,List<GiftItem>> giftItemsByAccount {get;set;}
 
+    public ACC_Segment_SVC(){
+        this.processDate = Date.Today();
+    }
 	/*******************************************************************************************************
 	* @description constructor
 	* @param accounts
@@ -118,8 +121,8 @@ public with sharing class ACC_Segment_SVC {
         try {
            List<Database.SaveResult> saveResults =  Database.update(this.accountMap.values(),false);
            for(Database.SaveResult saveResult:saveResults){
-                if(!sr.isSuccess())
-                    failures.add(sr.getId());
+                if(!saveResult.isSuccess())
+                    failures.add(saveResult.getId());
            }
         } catch(Exception e){
             system.debug(e.getMessage());
@@ -357,7 +360,7 @@ public with sharing class ACC_Segment_SVC {
                         account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
                     } else {
                         account.put('Sustainer_Status__c' ,'Deep Lapsed');
-                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
+                        account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(90));
                     }
                 }
                 updatedAccounts.put(accountId,account);
@@ -484,19 +487,41 @@ public with sharing class ACC_Segment_SVC {
         amountByDate.put(extendedLapsedDate,0);
         amountByDate.put(lapsedDate,0);
         for(GiftItem giftItem:giftItems){
-            Date giftDate = giftItem.lastReceivedDate == null ? giftItem.closeDate : giftItem.lastReceivedDate;
-            Decimal giftAmount = giftItem.committedAmount;
-            if(giftAmount == 0 || giftAmount == null || giftDate == null)
-                continue;
+            if(giftItem.payments == null){
+                Date giftDate = giftItem.lastReceivedDate == null ? giftItem.closeDate : giftItem.lastReceivedDate;
+                Decimal giftAmount = giftItem.committedAmount;
+                if(giftAmount == 0 || giftAmount == null || giftDate == null)
+                    continue;
 
-            if(giftDate >= firstDate && giftDate <deepLapsedDate){
-                amountByDate.put(firstDate,amountByDate.get(firstDate)+giftAmount);
-            } else if(giftDate >= deepLapsedDate && giftDate < extendedLapsedDate){
-                amountByDate.put(deepLapsedDate,amountByDate.get(deepLapsedDate)+giftAmount);
-            } else if(giftDate >= extendedLapsedDate && giftDate < lapsedDate){
-                amountByDate.put(extendedLapsedDate,amountByDate.get(extendedLapsedDate)+giftAmount);
-            } else if(giftDate >= lapsedDate){
-                amountByDate.put(lapsedDate,amountByDate.get(lapsedDate)+giftAmount);
+                if(giftDate >= firstDate && giftDate <deepLapsedDate){
+                    amountByDate.put(firstDate,amountByDate.get(firstDate)+giftAmount);
+                } else if(giftDate >= deepLapsedDate && giftDate < extendedLapsedDate){
+                    amountByDate.put(deepLapsedDate,amountByDate.get(deepLapsedDate)+giftAmount);
+                } else if(giftDate >= extendedLapsedDate && giftDate < lapsedDate){
+                    amountByDate.put(extendedLapsedDate,amountByDate.get(extendedLapsedDate)+giftAmount);
+                } else if(giftDate >= lapsedDate){
+                    amountByDate.put(lapsedDate,amountByDate.get(lapsedDate)+giftAmount);
+                }
+            } else {
+                for(giftPayment pmt:giftItem.payments){
+                    if(pmt.paid){
+                        Date giftDate = pmt.paymentDate;
+                        Decimal giftAmount = pmt.amount;
+                        if(giftAmount == 0 || giftAmount == null || giftDate == null){
+                            continue;
+                        }
+                        if(giftDate >= firstDate && giftDate < deepLapsedDate){
+                            amountByDate.put(firstDate,amountByDate.get(firstDate)+giftAmount);
+                        } else if(giftDate >= deepLapsedDate && giftDate < extendedLapsedDate){
+                            amountByDate.put(deepLapsedDate,amountByDate.get(deepLapsedDate)+giftAmount);
+                        } else if(giftDate >= extendedLapsedDate && giftDate < lapsedDate){
+                            amountByDate.put(extendedLapsedDate,amountByDate.get(extendedLapsedDate)+giftAmount);
+                        } else if(giftDate >= lapsedDate){
+                            amountByDate.put(lapsedDate,amountByDate.get(lapsedDate)+giftAmount);
+                        }
+                    }
+                }
+                
             }
         }
 

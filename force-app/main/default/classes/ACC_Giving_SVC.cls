@@ -6,6 +6,8 @@
 */
 public with sharing class ACC_Giving_SVC {
 
+
+
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id
 	* @param recordId
@@ -23,6 +25,7 @@ public with sharing class ACC_Giving_SVC {
         set;
     }
 
+
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id
 	* @param recordId
@@ -32,7 +35,7 @@ public with sharing class ACC_Giving_SVC {
         get {
             if(useFiscalYear == null) {
                 DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
-                useFiscalYear = dss == null ? false : dss.UseFiscalYear__c;
+                useFiscalYear = dss.UseFiscalYear__c == null ? false : dss.UseFiscalYear__c;
             }
             return useFiscalYear;
         }
@@ -40,19 +43,80 @@ public with sharing class ACC_Giving_SVC {
     }
 
 	/*******************************************************************************************************
-	* @description gets the account id of a record Id
-	* @param recordId
-	* @return Id  
+	* @description gets the list of record types that should be considered when processing segmentation
+	* @return List<String>
+	********************************************************************************************************/
+    public static List<String> recordTypesForProcessing { 
+        get {
+            if(recordTypesForProcessing == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                if(String.isBlank(dss.OpportunityRecordTypeNames__c)){
+                    recordTypesForProcessing = new List<String>{'Donation'};
+                } else {
+                    String settings = dss.OpportunityRecordTypeNames__c;
+                    recordTypesForProcessing = getListFromCommaDelimitedString(settings);
+                }
+            }
+            return recordTypesForProcessing;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the list of Account names that should be suppressed from segment processing
+	* @return List<String>
+	********************************************************************************************************/
+    public static List<String> supppressAccountNames { 
+        get {
+            if(supppressAccountNames == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                if(String.isBlank(dss.HouseholdNamesToSuppress__c)){
+                    supppressAccountNames = new List<String>{'Anonymous Household','Anonymous Donor Household'};
+                } else {
+                    String settings = dss.HouseholdNamesToSuppress__c;
+                    supppressAccountNames = getListFromCommaDelimitedString(settings);
+                } 
+            }          
+            return supppressAccountNames;
+        }
+        set;
+    }
+
+	/*******************************************************************************************************
+	* @description gets the list of roles to incorporate for soft credits
+	* @param List<String>
 	********************************************************************************************************/
     public static List<String> softCreditRoles { 
         get {
-           return new List<String>{
-                'Soft Credit',
-                'Matched Donor'
-           };
+            if(softCreditRoles == null) {
+                DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+                if(String.isBlank(dss.SoftCreditRoleNames__c)){
+                    softCreditRoles = new List<String>{'Soft Credit','Matched Donor'};
+                } else {
+                    String settings = dss.SoftCreditRoleNames__c;
+                    softCreditRoles = getListFromCommaDelimitedString(settings);
+                }  
+            }
+            return softCreditRoles;
         }
         set;
     } 
+
+	/*******************************************************************************************************
+	* @description gets a List<String> from a comma delimited String
+	* @param value
+	* @return List<String>  
+	********************************************************************************************************/
+    public static List<String> getListFromCommaDelimitedString(String value){
+        List<String> values = new List<String>();
+        values = String.isNotBlank(value) && value.contains(',') ? value.split(',') : new List<String>{value};
+        List<String> trimmedStrings = new List<String>();
+        for(String listValue:values){
+            listValue = listValue.trim();
+            trimmedStrings.add(listValue);
+        }
+        return trimmedStrings;
+    }
 
 	/*******************************************************************************************************
 	* @description gets the account id of a record Id
@@ -297,12 +361,6 @@ public with sharing class ACC_Giving_SVC {
 	* @return String
 	********************************************************************************************************/
     public static List<GiftItem> getGiftItems(List<Opportunity> oppList, List<OpportunityContactRole> croleList, List<npsp__Partial_Soft_Credit__c> pscList, List<npsp__Account_Soft_Credit__c> ascList, Boolean showWonOnly){
-		system.debug('counts: '+oppList.size()+'/'+croleList.size()+'/'+pscList.size()+'/'+ascList.size());
-        
-        /*******************************************************************************************************
-		* @description count of giftItems
-		*/
-        Integer giftCount = 0;
 
 		/*******************************************************************************************************
 		* @description gift history to return
@@ -342,7 +400,7 @@ public with sharing class ACC_Giving_SVC {
                         gi.pledgedAmountOutstanding = oppOutstanding; 
                         oppOutstandingMap.put(opp.Id,oppOutstanding);
                     }
-                    giftCount++;
+                    
 
                     if(opp.isWon && showWonOnly){
                         hardCreditGiftItems.put(gi.recordId,gi);
@@ -355,6 +413,7 @@ public with sharing class ACC_Giving_SVC {
                 String recurringName = opp.npe03__Recurring_Donation__r.Name;
                 String recurringStage = opp.npe03__Recurring_Donation__r.npsp__Status__c;
                 String recurringId = opp.npe03__Recurring_Donation__c;
+                List<giftPayment> pmts = new List<giftPayment>();
                 GiftItem gi = new GiftItem(opp,isRecurring);
                 gi.oppAmount = isRecurring ? gi.TotalAmount + gi.pledgedAmountOutstanding : opp.Amount;
                 gi.recordId = isRecurring ? recurringId : opp.Id;
@@ -362,7 +421,10 @@ public with sharing class ACC_Giving_SVC {
                 gi.Name = isRecurring ? recurringName : opp.Name;
                 gi.oppAmount = opp.Amount;
                 gi.TotalAmount = gi.HardCreditAmount;
-            
+                if(isRecurring){
+                    pmts.add(new giftPayment(opp));
+                }        
+        
                 if(!hardCreditGiftItems.containsKey(gi.recordId)) {
                     hardCreditGiftItems.put(gi.recordId, gi);
                 } else {
@@ -371,6 +433,9 @@ public with sharing class ACC_Giving_SVC {
                     gi.lastReceivedDate = hardCreditGiftItems.get(gi.recordId).lastReceivedDate < gi.lastReceivedDate ? gi.lastReceivedDate : hardCreditGiftItems.get(gi.recordId).lastReceivedDate;
                     gi.TotalAmount = gi.HardCreditAmount;
                     gi.oppAmount = isRecurring ? gi.TotalAmount + gi.pledgedAmountOutstanding : opp.Amount;
+                    gi.payments = hardCreditGiftItems.get(gi.recordId).payments;
+                    gi.payments = gi.payments == null ? new List<giftPayment>() : gi.payments;
+                    gi.payments.addAll(pmts);
 
                     if(opp.isWon && showWonOnly){
                         hardCreditGiftItems.put(gi.recordId,gi); 
@@ -379,8 +444,7 @@ public with sharing class ACC_Giving_SVC {
                     }
                 
                 }
-                
-                giftCount++;        
+                     
             }
         }
         for(OpportunityContactRole crole : crolelist) {
@@ -388,7 +452,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(crole);
-            giftCount++;
 
             if(crole.Opportunity.IsWon && showWonOnly) {
                 softCreditGiftItems.put(gi.recordId, gi);
@@ -401,7 +464,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(psc);
-            giftCount++;
 
             if(psc.npsp__Opportunity__r.isWon && showWonOnly){
                 softCreditGiftItems.put(gi.recordId, gi);
@@ -414,7 +476,6 @@ public with sharing class ACC_Giving_SVC {
                 continue;
             
             GiftItem gi = new GiftItem(ascr);
-            giftCount++;
 
             if(ascr.npsp__Opportunity__r.isWon && showWonOnly){
                 softCreditGiftItems.put(gi.recordId, gi);
@@ -900,7 +961,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AND Role IN:softCreditRoles';
         whereClause+=' AND Opportunity.Amount != null';
         whereClause+=' AND Opportunity.Amount != 0';
-        whereClause+=' AND Opportunity.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND Opportunity.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (Opportunity.IsClosed = TRUE AND Opportunity.IsWon = TRUE)';
         whereClause+='     OR Opportunity.IsClosed = FALSE';
@@ -920,7 +981,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AccountId IN:accountIds';
         whereClause+=' AND Amount != null';
         whereClause+=' AND Amount != 0';
-        whereClause+=' AND RecordType.DeveloperName IN (\'Donation\')';
+        whereClause+=' AND RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (IsClosed = TRUE AND IsWon = TRUE)';
         whereClause+='     OR IsClosed = FALSE';
@@ -938,7 +999,7 @@ public with sharing class ACC_Giving_SVC {
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
         whereClause+=' AND npsp__Role_Name__c IN:softCreditRoles';
-        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';
@@ -956,7 +1017,7 @@ public with sharing class ACC_Giving_SVC {
         String whereClause =' WHERE npsp__Account__c IN:accountIds';
         whereClause+=' AND npsp__Opportunity__r.Amount != null';
         whereClause+=' AND npsp__Opportunity__r.Amount != 0';
-        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName = \'Donation\'';
+        whereClause+=' AND npsp__Opportunity__r.RecordType.DeveloperName IN :recordTypesForProcessing';
         whereClause+=' AND (';
         whereClause+='     (npsp__Opportunity__r.IsClosed = TRUE AND npsp__Opportunity__r.IsWon = TRUE)';
         whereClause+='     OR npsp__Opportunity__r.IsClosed = FALSE';

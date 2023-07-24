@@ -159,6 +159,52 @@ private class ACC_Giving_TEST {
 
     }
     @isTest
+    static void testSettings1() {
+        
+        test.startTest();
+        Set<String> roles = new Set<String>();
+        roles.addAll(ACC_Giving_SVC.softCreditRoles);
+        Set<String> hhNames = new Set<String>();
+        hhNames.addAll(ACC_Giving_SVC.supppressAccountNames);
+        Set<String> recordTypes = new Set<String>();
+        recordTypes.addAll(ACC_Giving_SVC.recordTypesForProcessing);
+        test.stopTest();
+        
+        system.assert(roles.contains('Soft Credit'));
+        system.assert(roles.contains('Matched Donor'));
+        system.assert(hhNames.contains('Anonymous Household'));
+        system.assert(recordTypes.contains('Donation'));
+
+        
+    }
+    @isTest
+    static void testSettings2() {
+        DonorSegmentationSettings__c dss = DonorSegmentationSettings__c.getOrgDefaults();
+        dss.HouseholdNamesToSuppress__c = 'Anonymous Donor Household, Anonymous Household';
+        dss.OpportunityRecordTypeNames__c = 'Donation, Major Gift';
+        dss.SoftCreditRoleNames__c = 'Soft Credit, Influencer';
+        upsert dss;
+        
+        test.startTest();
+        Set<String> roles = new Set<String>();
+        roles.addAll(ACC_Giving_SVC.softCreditRoles);
+        
+        Set<String> hhNames = new Set<String>();
+        hhNames.addAll(ACC_Giving_SVC.supppressAccountNames);
+        
+        Set<String> recordTypes = new Set<String>();
+        recordTypes.addAll(ACC_Giving_SVC.recordTypesForProcessing);
+       
+        system.assert(roles.contains('Influencer'));
+        system.assert(hhNames.contains('Anonymous Donor Household'));
+        system.assert(recordTypes.contains('Major Gift'));
+        system.assert(roles.contains('Soft Credit'));
+
+        test.stopTest();
+
+        
+    }    
+    @isTest
     static void testRecurringGiftItem() {
         String soql = ACC_Giving_SVC.getOpportunitySoql();
 
@@ -260,5 +306,17 @@ private class ACC_Giving_TEST {
 
         List<AnnualGiftHistory__c> agh = [SELECT Id FROM AnnualGiftHistory__c];
         system.assert(agh.size()>0);
+    }
+
+    @isTest
+    static void testGiftPayment(){
+        List<giftPayment> gis = new List<giftPayment>();
+        List<Opportunity> opps = [SELECT Id,CloseDate,IsWon,Amount FROM Opportunity];
+        for(Opportunity opp:opps){
+            gis.add(new giftPayment(opp));
+        }
+        system.assertEquals(gis.size(),opps.size());
+        system.assert(gis[0].objectType.equalsIgnoreCase('opportunity'));
+
     }
 }

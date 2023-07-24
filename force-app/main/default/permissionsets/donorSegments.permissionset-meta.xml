@@ -316,21 +316,6 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Combined_Credits_2_Years_Ago__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Combined_Credits_Last_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Combined_Credits_This_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>true</editable>
         <field>Contact.Donor_Segment_Applied_Date__c</field>
         <readable>true</readable>
@@ -390,26 +375,7 @@
         <field>Contact.Mid_Level_Donor_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Number_of_Combined_Credits_2_Years_Ago__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Number_of_Combined_Credits_Last_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Number_of_Combined_Credits_This_Year__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Number_of_Combined_Credits__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.Sustainer_Status_Applied_Date__c</field>
@@ -418,11 +384,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.Sustainer_Status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Contact.Total_Combined_Credits__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -337,7 +337,7 @@ public with sharing class ACC_Segment_SVC {
 
             if(givingLevels.size()>0){
                 Account account = this.accountMap.get(accountId);
-                account = calculateSoftCreditRollups(account,giftItems);
+                //account = calculateSoftCreditRollups(account,giftItems);
                 for(String fieldName:givingLevels.keyset()){
                     // if there is a downgraded major or mid level status
                     // then we should not automatically set the status
@@ -374,7 +374,7 @@ public with sharing class ACC_Segment_SVC {
 	* @param account the account to calculate rollup values for 
     * @param giftItems the gift items to rollup
 	* @return account
-	********************************************************************************************************/
+	********************************************************************************************************
     public static Account calculateSoftCreditRollups(Account account,List<giftItem> giftItems){
         Date firstSoftCreditDate;
         Decimal firstSoftCreditAmount;
@@ -444,7 +444,7 @@ public with sharing class ACC_Segment_SVC {
 
         return account;
     }
-
+    */
 
 	/*******************************************************************************************************
 	* @description gets a set of giving levels based on the threshold dates and amounts provided

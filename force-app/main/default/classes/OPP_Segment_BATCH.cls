@@ -8,6 +8,15 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
 	/**
 	* @description a collection of Ids to run the rollup for
 	*/  
+	public List<String> suppressAccountNames {
+		get {
+			return ACC_Giving_SVC.supppressAccountNames;
+		}
+		set;
+	}
+	/**
+	* @description a collection of Ids to run the rollup for
+	*/  
     private Set<Id> failedIds;
 
 	/**
@@ -65,7 +74,6 @@ public with sharing class OPP_Segment_BATCH implements Database.Batchable<sObjec
 	* @return Querylocator the scope of the batch
 	*/  	 
 	public Database.QueryLocator start(Database.BatchableContext BC) {
-		List<String> suppressAccountNames  = ACC_Giving_SVC.supppressAccountNames;
         accountIds = accountIds == null ? new Set<Id>() : accountIds;
 		failedIds = failedIds == null ? new Set<Id>() : failedIds;
 		String soqlQuery = getSOQL();

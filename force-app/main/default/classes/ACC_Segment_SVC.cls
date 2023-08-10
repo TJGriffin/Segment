@@ -88,8 +88,8 @@ public with sharing class ACC_Segment_SVC {
         this.processDate = Date.Today();
         ACC_Segment_UTIL.manualOverride = false;
         this.accountMap = new Map<Id, Account>(accounts);
-        this.giftItemsByAccount = ACC_Giving_SVC.getGiftItems(this.accountMap.keyset(),true);
-        
+        //this.giftItemsByAccount = ACC_Giving_SVC.getGiftItems(this.accountMap.keyset(),true);
+        this.getAccountData();
         this.processSegments();
         this.updateAccounts();
     }
@@ -106,9 +106,46 @@ public with sharing class ACC_Segment_SVC {
         ACC_Segment_UTIL.manualOverride = false;
         this.accountMap = new Map<Id, Account>(accounts);
         this.giftItemsByAccount = ACC_Giving_SVC.getGiftItems(this.accountMap.keyset(),true, effectiveDate);
-        
-        this.processSegments();
+        this.processSegmentsHistorical();
     }
+
+    /*******************************************************************************************************
+	* @description gets the fields needed for the segment calculation
+    * @return void
+	********************************************************************************************************/
+    public void getAccountData(){
+        List<accounts> accs = [
+            SELECT 
+            Id,
+            Total_Combined_Credits_This_Fiscal_Year__c,
+            Total_Combined_Credits_Last_Fiscal_Year__c,
+            Total_Combined_Credits_2_FY_Ago__c,
+            Donor_Segment__c,
+            Donor_Status__c,
+            Major_Donor_Status__c,
+            Mid_Level_Donor_Status__c,
+            Sustainer_Status__c,
+            Donor_Status_Applied_Date__c,
+            Major_Donor_Status_Applied_Date__c,
+            Mid_Level_Donor_Status_Applied_Date__c,
+            Sustainer_Status_Aplied_Date__c,
+            Major_Donor_Downgrade_Date__c,
+            Major_Donor_Downgrade_By__c,
+            Mid_Level_Donor_Downgrade_Date__c,
+            Mid_Level_Donor_Downgrade_By__c,
+            Total_Combined_Credits__c,
+            Total_Combined_Credits_Last_12_Months__c,
+            Total_Combined_Credits_Last_24_Months__c,
+            Total_Combined_Credits_Last_60_Months__c
+            First_Recurring_Gift_Date__c,
+            Last_Recurring_Gift_Date__c
+
+            FROM Account
+            WHERE Id IN:accountMap.keyset()
+        ];
+        accountMap = new Map<Id, Account>(accs);
+    }
+
     /*******************************************************************************************************
 	* @description processes accounts and contacts on before to set the Donor Segment
 	* @param objs
@@ -313,12 +350,88 @@ public with sharing class ACC_Segment_SVC {
         return contactsToUpdate;
     }
 
+  	/*******************************************************************************************************
+	* @description determines segments for a given set of accounts
+	* @param account
+	* @return account
+	********************************************************************************************************/  
+    public account calculateStatus(Account account, String statusLabel, Decimal statusAmount){
+        if(statusAmount >= 25000){
+            if(account.Major_Donor_Downgrade_Date__c == null){
+                account.Major_Donor_Status__c = statusLabel;
+            }
+            account.Donor_Status__c = statusLabel;
+        }
+        
+        if(statusAmount >=1000 && statusAmount < 25000){
+            if(account.Mid_Level_Donor_Downgrade_Date__c == null){
+                account.Mid_Level_Donor_Status__c = statusLabel;
+            }
+            account.Donor_Status__c = statusLabel;
+        }
+
+        if(statusAmount < 1000){
+            account.Donor_Status__c = statusLabel;
+        }
+    }
+
+  	/*******************************************************************************************************
+	* @description determines segments for a given set of accounts
+	* @param account
+	* @return account
+	********************************************************************************************************/  
+    public account calculateStatus(Account account){
+    
+        Decimal activeAmount = account.Total_Combined_Credits_Last_12_Months__c;
+        Decimal lapsedAmount = account.Total_Combined_Credits_Last_24_Months__c;
+        Decimal extendedLapsedAmount = account.Total_Combined_Credits_Last_60_Months__c;
+        Decimal totalAmount = account.Total_Combined_Credits__c;
+        account = calculateStatus(account,'Deep Lapsed',totalAmount);
+        account = calculateStatus(account,'Extended Lapsed',extendedLapsedAmount);
+        account = calculateStatus(account,'Lapsed',lapsedAmount);
+        account = calculateStatus(account,'Active',activeAmount);
+
+        if(account.First_Recurring_Gift_Date__c != null){
+            if((Date) account.Last_Recurring_Gift_Date__c > lapsedSustainer){
+                account.put('Sustainer_Status__c' ,'Active');
+                account.put('Sustainer_Status_Applied_Date__c',account.First_Recurring_Gift_Date__c);
+            } else if((Date)account.Last_Recurring_Gift_Date__c > deepLapsedSustainer){
+                account.put('Sustainer_Status__c' ,'Lapsed');
+                account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(60));
+            } else {
+                account.put('Sustainer_Status__c' ,'Deep Lapsed');
+                account.put('Sustainer_Status_Applied_Date__c',account.Last_Recurring_Gift_Date__c.addDays(90));
+            }
+        }
+
+        return account;
+    }
+
 	/*******************************************************************************************************
 	* @description determines segments for a given set of accounts
 	* @param void
 	* @return void
 	********************************************************************************************************/
-    public void processSegments(){
+    public void processSegments(){        
+        Map<Id,Account> updatedAccounts = new Map<Id, Account>();
+        for(Id accountId:this.accountMap.keyset()){
+            Account acc = this.accountMap.get(accountId);
+            acc = setAllToZero(acc);
+            if(acc.Total_Combined_Credits__c >0){
+                acc = calculateStatus(acc);
+            }
+            updatedAccounts.put(acc.Id,acc);
+        }
+
+        this.accountMap.putAll(updatedAccounts);
+    }
+
+	/*******************************************************************************************************
+	* @description determines segments for a given set of accounts
+	* @param void
+	* @return void
+	********************************************************************************************************/
+    public void processSegmentsHistorical(){
         ACC_Giving_CTRL.sortOrder = 'ASC';
         Map<Id,Account> updatedAccounts = new Map<Id, Account>();
         system.debug(this.giftItemsByAccount.keyset());
@@ -368,6 +481,29 @@ public with sharing class ACC_Segment_SVC {
 
         }
         this.accountMap.putAll(updatedAccounts);
+    }
+
+	/*******************************************************************************************************
+	* @description sets all of the various status fields to 0
+	* @param acc the account to calculate rollup values for 
+	* @return account
+	********************************************************************************************************/
+    public static Account setAllToZero(Account acc){
+        for(String statusFieldName:segmentFieldDates.keyset()){
+            String dateFieldName = segmentFieldDates.get(statusFieldName);
+            String status = String.valueOf(acc.get(statusFieldName));
+            if(String.isNotBlank(status) && status.containsIgnoreCase('Prospect')){
+                continue;
+            } else if(statusFieldName.containsIgnoreCase('Major') && acc.Major_Donor_Downgrade_Date__c != null){
+                continue;
+            } else if(statusFieldName.containsIgnoreCase('Mid') && acc.Mid_Level_Donor_Downgrade_Date__c != null){
+                continue;
+            } else {
+                acc.put(statusFieldName,null);
+                acc.put(dateFieldName,null);
+            }
+        }
+        return acc;
     }
 	/*******************************************************************************************************
 	* @description calculates rollup values for soft credits
@@ -623,7 +759,21 @@ public with sharing class ACC_Segment_SVC {
         }
         set;
     }
-
+	/*******************************************************************************************************
+	* @description the list of segment fields
+    *   TODO:  this should ultimately be backed by custom metadata
+	********************************************************************************************************/
+    public static Map<Integer,String> rollupFieldsByMonth {
+        get {
+            return new Map<Integer,String>{
+                12 => 'Total_Combined_Credits_Last_12_Months__c',
+                24 => 'Total_Combined_Credits_Last_24_Months__c',
+                60 => 'Total_Combined_Credits_Last_60_Months__c',
+                0 => 'Total_Combined_Credits__c'
+            };
+        }
+        set;
+    }
 	/*******************************************************************************************************
 	* @description the list of segment fields
     *   TODO:  this should ultimately be backed by custom metadata

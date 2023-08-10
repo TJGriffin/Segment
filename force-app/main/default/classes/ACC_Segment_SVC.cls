@@ -136,7 +136,7 @@ public with sharing class ACC_Segment_SVC {
             Total_Combined_Credits__c,
             Total_Combined_Credits_Last_12_Months__c,
             Total_Combined_Credits_Last_24_Months__c,
-            Total_Combined_Credits_Last_60_Months__c
+            Total_Combined_Credits_Last_60_Months__c,
             First_Recurring_Gift_Date__c,
             Last_Recurring_Gift_Date__c
 

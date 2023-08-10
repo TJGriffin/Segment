@@ -114,7 +114,7 @@ public with sharing class ACC_Segment_SVC {
     * @return void
 	********************************************************************************************************/
     public void getAccountData(){
-        List<accounts> accs = [
+        List<account> accs = [
             SELECT 
             Id,
             Total_Combined_Credits_This_Fiscal_Year__c,
@@ -373,6 +373,7 @@ public with sharing class ACC_Segment_SVC {
         if(statusAmount < 1000){
             account.Donor_Status__c = statusLabel;
         }
+        return account;
     }
 
   	/*******************************************************************************************************

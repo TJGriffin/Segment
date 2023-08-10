@@ -117,9 +117,9 @@ public with sharing class ACC_Segment_SVC {
         List<account> accs = [
             SELECT 
             Id,
-            Total_Combined_Credits_This_Fiscal_Year__c,
-            Total_Combined_Credits_Last_Fiscal_Year__c,
-            Total_Combined_Credits_2_FY_Ago__c,
+            Combined_Credits_This_Year__c,
+            Combined_Credits_Last_Year__c,
+            Combined_Credits_2_Years_Ago__c,
             Donor_Segment__c,
             Donor_Status__c,
             Major_Donor_Status__c,

@@ -128,7 +128,7 @@ public with sharing class ACC_Segment_SVC {
             Donor_Status_Applied_Date__c,
             Major_Donor_Status_Applied_Date__c,
             Mid_Level_Donor_Status_Applied_Date__c,
-            Sustainer_Status_Aplied_Date__c,
+            Sustainer_Status_Applied_Date__c,
             Major_Donor_Downgrade_Date__c,
             Major_Donor_Downgrade_By__c,
             Mid_Level_Donor_Downgrade_Date__c,

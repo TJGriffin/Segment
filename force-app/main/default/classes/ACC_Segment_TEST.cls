@@ -159,7 +159,7 @@ private class ACC_Segment_TEST {
 
     @isTest
     static void testService() {
-
+        Map<String, List<String>> downgradeFields = ACC_Segment_SVC.downgradeFields;
         String soql = ACC_Segment_SVC.getSegmentFieldSoql('Account');
         List<Account> accounts =  (List<Account>) Database.query(soql);
 

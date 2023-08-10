@@ -760,21 +760,7 @@ public with sharing class ACC_Segment_SVC {
         }
         set;
     }
-	/*******************************************************************************************************
-	* @description the list of segment fields
-    *   TODO:  this should ultimately be backed by custom metadata
-	********************************************************************************************************/
-    public static Map<Integer,String> rollupFieldsByMonth {
-        get {
-            return new Map<Integer,String>{
-                12 => 'Total_Combined_Credits_Last_12_Months__c',
-                24 => 'Total_Combined_Credits_Last_24_Months__c',
-                60 => 'Total_Combined_Credits_Last_60_Months__c',
-                0 => 'Total_Combined_Credits__c'
-            };
-        }
-        set;
-    }
+
 	/*******************************************************************************************************
 	* @description the list of segment fields
     *   TODO:  this should ultimately be backed by custom metadata

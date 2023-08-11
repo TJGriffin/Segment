@@ -16,10 +16,61 @@ import CONTACT_TOTAL_COUNT from '@salesforce/schema/Contact.Account.Number_Combi
 import CONTACT_LAST_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Combined_Credits_Last_Year__c';
 import CONTACT_THIS_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Combined_Credits_This_Year__c';
 import CONTACT_TWO_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Combined_Credits_2_Years_Ago__c';
+import ACCOUNT_INFLUENCED_TOTAL_AMOUNT from '@salesforce/schema/Account.Total_Influenced_Giving__c';
+import ACCOUNT_INFLUENCED_LAST_YEAR_AMOUNT from '@salesforce/schema/Account.Total_Influenced_Giving_Last_FY__c';
+import ACCOUNT_INFLUENCED_THIS_YEAR_AMOUNT from '@salesforce/schema/Account.Total_Influenced_Giving_This_FY__c';
+import ACCOUNT_INFLUENCED_TWO_YEAR_AMOUNT from '@salesforce/schema/Account.Total_Influenced_Giving_2_FY_Ago__c';
+import ACCOUNT_INFLUENCED_TOTAL_COUNT from '@salesforce/schema/Account.Number_Influenced_Gifts__c';
+import ACCOUNT_INFLUENCED_LAST_YEAR_COUNT from '@salesforce/schema/Account.Number_Influenced_Gifts_Last_FY__c';
+import ACCOUNT_INFLUENCED_THIS_YEAR_COUNT from '@salesforce/schema/Account.Number_Influenced_Gifts_This_FY__c';
+import ACCOUNT_INFLUENCED_TWO_YEAR_COUNT from '@salesforce/schema/Account.Number_Influenced_Gifts_2_FY_Ago__c';
+import CONTACT_INFLUENCED_TOTAL_AMOUNT from '@salesforce/schema/Contact.Account.Total_Influenced_Giving__c';
+import CONTACT_INFLUENCED_LAST_YEAR_AMOUNT from '@salesforce/schema/Contact.Account.Total_Influenced_Giving_Last_FY__c';
+import CONTACT_INFLUENCED_THIS_YEAR_AMOUNT from '@salesforce/schema/Contact.Account.Total_Influenced_Giving_This_FY__c';
+import CONTACT_INFLUENCED_TWO_YEAR_AMOUNT from '@salesforce/schema/Contact.Account.Total_Influenced_Giving_2_FY_Ago__c';
+import CONTACT_INFLUENCED_TOTAL_COUNT from '@salesforce/schema/Contact.Account.Number_Influenced_Gifts__c';
+import CONTACT_INFLUENCED_LAST_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Influenced_Gifts_Last_FY__c';
+import CONTACT_INFLUENCED_THIS_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Influenced_Gifts_This_FY__c';
+import CONTACT_INFLUENCED_TWO_YEAR_COUNT from '@salesforce/schema/Contact.Account.Number_Influenced_Gifts_2_FY_Ago__c';
 
 
-const ACCOUNT_FIELDS = [ACCOUNT_TOTAL_AMOUNT,ACCOUNT_LAST_YEAR_AMOUNT,ACCOUNT_THIS_YEAR_AMOUNT,ACCOUNT_TWO_YEAR_AMOUNT,ACCOUNT_TOTAL_COUNT,ACCOUNT_LAST_YEAR_COUNT,ACCOUNT_THIS_YEAR_COUNT,ACCOUNT_TWO_YEAR_COUNT];
-const CONTACT_FIELDS = [CONTACT_TOTAL_AMOUNT,CONTACT_LAST_YEAR_AMOUNT,CONTACT_THIS_YEAR_AMOUNT,CONTACT_TWO_YEAR_AMOUNT,CONTACT_TOTAL_COUNT,CONTACT_LAST_YEAR_COUNT,CONTACT_THIS_YEAR_COUNT,CONTACT_TWO_YEAR_COUNT];
+
+const ACCOUNT_FIELDS = [
+    ACCOUNT_TOTAL_AMOUNT,
+    ACCOUNT_LAST_YEAR_AMOUNT,
+    ACCOUNT_THIS_YEAR_AMOUNT,
+    ACCOUNT_TWO_YEAR_AMOUNT,
+    ACCOUNT_TOTAL_COUNT,
+    ACCOUNT_LAST_YEAR_COUNT,
+    ACCOUNT_THIS_YEAR_COUNT,
+    ACCOUNT_TWO_YEAR_COUNT,
+    ACCOUNT_INFLUENCED_TOTAL_AMOUNT,
+    ACCOUNT_INFLUENCED_LAST_YEAR_AMOUNT,
+    ACCOUNT_INFLUENCED_THIS_YEAR_AMOUNT,
+    ACCOUNT_INFLUENCED_TWO_YEAR_AMOUNT,
+    ACCOUNT_INFLUENCED_TOTAL_COUNT,
+    ACCOUNT_INFLUENCED_LAST_YEAR_COUNT,
+    ACCOUNT_INFLUENCED_THIS_YEAR_COUNT,
+    ACCOUNT_INFLUENCED_TWO_YEAR_COUNT
+];
+const CONTACT_FIELDS = [    
+    CONTACT_TOTAL_AMOUNT,
+    CONTACT_LAST_YEAR_AMOUNT,
+    CONTACT_THIS_YEAR_AMOUNT,
+    CONTACT_TWO_YEAR_AMOUNT,
+    CONTACT_TOTAL_COUNT,
+    CONTACT_LAST_YEAR_COUNT,
+    CONTACT_THIS_YEAR_COUNT,
+    CONTACT_TWO_YEAR_COUNT,
+    CONTACT_INFLUENCED_TOTAL_AMOUNT,
+    CONTACT_INFLUENCED_LAST_YEAR_AMOUNT,
+    CONTACT_INFLUENCED_THIS_YEAR_AMOUNT,
+    CONTACT_INFLUENCED_TWO_YEAR_AMOUNT,
+    CONTACT_INFLUENCED_TOTAL_COUNT,
+    CONTACT_INFLUENCED_LAST_YEAR_COUNT,
+    CONTACT_INFLUENCED_THIS_YEAR_COUNT,
+    CONTACT_INFLUENCED_TWO_YEAR_COUNT
+];
 
 export default class AccGivingSummary extends LightningElement {
     @api recordId;
@@ -58,6 +109,18 @@ export default class AccGivingSummary extends LightningElement {
     get twoYearAmount(){
         return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_TWO_YEAR_AMOUNT) : getFieldValue(this.account.data,CONTACT_TWO_YEAR_AMOUNT) ;
     }
+    get totalInfluencedAmount(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_TOTAL_AMOUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_TOTAL_AMOUNT);
+    }
+    get influencedLastYearAmount(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_LAST_YEAR_AMOUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_LAST_YEAR_AMOUNT);
+    }
+    get influencedThisYearAmount(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_THIS_YEAR_AMOUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_THIS_YEAR_AMOUNT);
+    }
+    get influencedTwoYearAmount(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_TWO_YEAR_AMOUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_TWO_YEAR_AMOUNT) ;
+    }
     get totalCount(){
         var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_TOTAL_COUNT) : getFieldValue(this.account.data,CONTACT_TOTAL_COUNT);
         var txt = count != null && count > 0 ? count+' gifts' : '0 gifts'; 
@@ -75,6 +138,26 @@ export default class AccGivingSummary extends LightningElement {
     }
     get twoYearCount(){
         var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_TWO_YEAR_COUNT) : getFieldValue(this.account.data,CONTACT_TWO_YEAR_COUNT);
+        var txt = count != null && count > 0 ? count+' gifts' : '0 gifts';  
+        return txt;
+    }
+    get totalInfluencedCount(){
+        var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_TOTAL_COUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_TOTAL_COUNT);
+        var txt = count != null && count > 0 ? count+' gifts' : '0 gifts'; 
+        return txt;
+    }
+    get influencedLastYearCount(){
+        var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_LAST_YEAR_COUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_LAST_YEAR_COUNT);
+        var txt = count != null && count > 0 ? count+' gifts' : '0 gifts';  
+        return txt;
+    }
+    get influencedThisYearCount(){
+        var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_THIS_YEAR_COUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_THIS_YEAR_COUNT);
+        var txt = count != null && count > 0 ? count+' gifts' : '0 gifts';  
+        return txt;
+    }
+    get influencedTwoYearCount(){
+        var count = this.isAccount ? getFieldValue(this.account.data,ACCOUNT_INFLUENCED_TWO_YEAR_COUNT) : getFieldValue(this.account.data,CONTACT_INFLUENCED_TWO_YEAR_COUNT);
         var txt = count != null && count > 0 ? count+' gifts' : '0 gifts';  
         return txt;
     }

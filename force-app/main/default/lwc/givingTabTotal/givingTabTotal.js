@@ -6,12 +6,21 @@ export default class GivingTabTotal extends LightningElement {
     @api count;
     @api footer;
     @api emphasize;
+    @api shade;
 
 
     get classList(){
-        return this.emphasize ? 'slds-box slds-theme_inverse' : 'slds-box slds-theme_default';
+       var classNames = this.emphasize ? 'slds-box slds-theme_inverse' : 'slds-box slds-theme_default';
+       if(this.shade){
+         classNames = this.emphasize ? 'slds-box slds-theme_alt-inverse' : 'slds-box slds-theme_shade';
+       }
+       return classNames;
     }
     get theme(){
-        return this.emphasize ? 'slds-text-title_caps slds-theme_inverse' : 'slds-text-title_caps slds-theme_default';
+        var classNames = this.emphasize ? 'slds-text-title_caps slds-theme_inverse' : 'slds-text-title_caps slds-theme_default';
+        if(this.shade){
+            classNames = this.emphasize ? 'slds-text-title_caps slds-theme_alt-inverse' : 'slds-text-title_caps slds-theme_shade';
+        }
+        return classNames;
     }
 }

@@ -1,3 +1,8 @@
-.slds-theme_inverse .slds-text-title_caps{
+.slds-theme_inverse .slds-text-title_caps, 
+.slds-theme_alt-inverse .slds-text-title_caps {
     color:#fff;
+}
+
+.slds-theme_alt-inverse {
+    background-color:#999;
 }

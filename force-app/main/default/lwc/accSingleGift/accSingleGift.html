@@ -15,7 +15,8 @@
                         <lightning-formatted-number value={gift.totalAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;soft credited
                     </template>
                     <template if:false={gift.isSoftCredit}>
-                        <lightning-formatted-number value={gift.totalAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;received 
+                        <lightning-formatted-number value={gift.totalAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>
+                        &nbsp;{giftStatus} 
                     </template>
                     <template if:true={amountDifference}>
                         &nbsp;from a&nbsp;<lightning-formatted-number value={gift.oppAmount} format-style="currency" currency-code="USD" minimum-fraction-digits="0" maximum-fraction-digits="0"></lightning-formatted-number>&nbsp;gift

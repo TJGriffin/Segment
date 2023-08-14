@@ -109,8 +109,6 @@ export default class AccGiving extends LightningElement {
     setGiftItems({data,error}) {
         this.showSpinner=false;
         this.data = data;
-        console.log('gift items');
-        console.log(JSON.stringify(this.data));
         this.parseData();
     }
 

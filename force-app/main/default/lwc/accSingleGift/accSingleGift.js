@@ -37,5 +37,7 @@ export default class AccSingleGift extends LightningElement {
     get badgeClass(){
         return this.emphasize ? 'slds-badge_lightest' : 'slds-badge_inverse';
     }
-    g
+    get giftStatus(){
+        return this.gift.oppAmount == this.gift.pledgedAmountOutstanding ? 'committed' : 'received';
+    }
 }

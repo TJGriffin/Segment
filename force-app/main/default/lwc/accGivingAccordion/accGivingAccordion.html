@@ -1,15 +1,19 @@
 <template>
-    <lightning-accordion allow-multiple-sections-open=true active-section-name="annual">
-        <lightning-accordion-section name="annual" label="Giving By Fiscal Year">
-            <c-acc-annual-giving-history record-id={recordId} avail-width={availWidth}></c-acc-annual-giving-history>
-        </lightning-accordion-section>
-        <lightning-accordion-section name="detail" label="Giving Detail">
-            <c-acc-giving record-id={recordId} avail-width={availWidth}></c-acc-giving>
-        </lightning-accordion-section>
-        <lightning-accordion-section name="influenced" label="Influenced Giving">
-            <template if:true={recordId}>
-                <lightning-flow flow-api-name="Account_Influenced_Gift_Table" flow-input-variables={inputVariables}></lightning-flow>
-            </template>
-        </lightning-accordion-section>
-    </lightning-accordion>
+    <lightning-layout>
+        <lightning-layout-item size="12">
+            <lightning-accordion allow-multiple-sections-open=true active-section-name="annual">
+                <lightning-accordion-section name="annual" label="Giving By Fiscal Year">
+                    <c-acc-annual-giving-history record-id={recordId} avail-width={availWidth}></c-acc-annual-giving-history>
+                </lightning-accordion-section>
+                <lightning-accordion-section name="detail" label="Giving Detail">
+                    <c-acc-giving record-id={recordId} avail-width={availWidth}></c-acc-giving>
+                </lightning-accordion-section>
+                <lightning-accordion-section name="influenced" label="Influenced Giving">
+                    <template if:true={recordId}>
+                        <lightning-flow flow-api-name="Account_Influenced_Gift_Table" flow-input-variables={inputVariables}></lightning-flow>
+                    </template>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </lightning-layout-item>
+    </lightning-layout>
 </template>

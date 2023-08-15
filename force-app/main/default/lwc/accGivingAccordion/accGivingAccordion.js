@@ -8,6 +8,15 @@ export default class AccGivingAccordion extends LightningElement {
         this.availWidth = window.innerWidth;
     };
 
+    get inputVariables(){
+        return [
+            {
+                name:'recordId',
+                type:'String',
+                value:this.recordId
+            }
+        ];
+    }
 
     connectedCallback(){
         this.applySize();

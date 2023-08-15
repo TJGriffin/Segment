@@ -11,9 +11,9 @@ export default class AccGivingAccordion extends LightningElement {
     get inputVariables(){
         return [
             {
-                name:'recordId',
-                type:'String',
-                value:this.recordId
+                name: 'recordId',
+                type: 'String',
+                value: this.recordId
             }
         ];
     }

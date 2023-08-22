@@ -4,16 +4,16 @@
             <div class="slds-m-around_small">
                 <ul class="slds-has-dividers_bottom-space">
                     <template if:true={majorDonorStatus}>
-                        <c-acc-status-widget status-label={majorDonorStatus} status-applied-date={majorDonorStatusAppliedDate}></c-acc-status-widget>
+                        <c-acc-status-widget status-label={majorDonorStatus} status-date={majorDonorStatusAppliedDate}></c-acc-status-widget>
                     </template>
                     <template if:true={midDonorStatus}>
-                        <c-acc-status-widget status-label={midDonorStatus} status-applied-date={midDonorStatusAppliedDate}></c-acc-status-widget>
+                        <c-acc-status-widget status-label={midDonorStatus} status-date={midDonorStatusAppliedDate}></c-acc-status-widget>
                     </template>
                     <template if:true={sustainerStatus}>
-                        <c-acc-status-widget status-label={sustainerStatus} status-applied-date={sustainerStatusAppliedDate}></c-acc-status-widget>
+                        <c-acc-status-widget status-label={sustainerStatus} status-date={sustainerStatusAppliedDate}></c-acc-status-widget>
                     </template>
                     <template if:true={donorStatus}>
-                        <c-acc-status-widget status-label={donorStatus} status-applied-date={donorStatusAppliedDate}></c-acc-status-widget>
+                        <c-acc-status-widget status-label={donorStatus} status-date={donorStatusAppliedDate}></c-acc-status-widget>
                     </template>
                 </ul>
                 <template if:true={canUpOrDowngrade}>

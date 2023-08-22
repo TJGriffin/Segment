@@ -100,11 +100,11 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     get canDowngradeMajor(){
-        return this.majorDonorStatus != null && this.majorDonorStatus != 'Former';
+        return this.majorDonorStatus != null && this.majorDonorStatus != 'Former' && this.majorDonorStatus != 'Prospect';
     }
 
     get canDowngradeMid(){
-        return this.midDonorStatus != null && this.midDonorStatus != 'Former';
+        return this.midDonorStatus != null && this.midDonorStatus != 'Former' && this.midDonorStatus != 'Prospect';
     }
 
     @wire(

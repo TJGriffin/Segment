@@ -23,12 +23,12 @@ public with sharing class ACC_Segment_CTRL {
     }
 
     @auraEnabled
-    public static String setProspectStatus(String recordId,String fieldName){
+    public static String setProspectStatus(String recordId,String fieldName, String status){
         String message;
         Id accountId = ACC_Giving_SVC.getAccountIdFromRecordId(recordId);
         String failedId;
         Account acc = new Account(Id=accountId);
-        acc.put(fieldName,'Prospect');
+        acc.put(fieldName,status);
 
         try {
             update acc;
@@ -40,12 +40,16 @@ public with sharing class ACC_Segment_CTRL {
     }
 
     @auraEnabled
-    public static String downgradeDonor(String recordId,String fieldName){
+    public static String downgradeDonor(String recordId,String fieldName, String status){
         String message;
         Id accountId = ACC_Giving_SVC.getAccountIdFromRecordId(recordId);
         String failedId;
         Account acc = new Account(Id=accountId);
-        acc.put(fieldName,'Former');
+        acc.put(fieldName,status);
+        if(String.isBlank(status)){
+            String dateFieldName = fieldName.replace('__c','_Applied_Date__c');
+            acc.put(dateFieldName,null);
+        }
 
         try {
             update acc;

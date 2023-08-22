@@ -1,4 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
+import { refreshApex } from "@salesforce/apex";
 import setProspect from '@salesforce/apex/ACC_Segment_CTRL.setProspectStatus';
 import setDowngrade from '@salesforce/apex/ACC_Segment_CTRL.downgradeDonor';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -175,6 +176,7 @@ export default class AccSegmentStatus extends LightningElement {
         setProspect({recordId:this.recordId,fieldName:fieldToSet, status:status})
         .then((result)=>{
             this.showToast();
+            refreshApex(this.account);
         })
         .catch((error)=>{
             console.log(JSON.stringify(error));
@@ -186,6 +188,7 @@ export default class AccSegmentStatus extends LightningElement {
         setDowngrade({recordId:this.recordId,fieldName:fieldToSet})
         .then((result)=>{
             this.showToast();
+            refreshApex(this.account);
         })
         .catch((error)=>{
             console.log(JSON.stringify(error));

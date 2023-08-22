@@ -1,0 +1,79 @@
+<template>
+    <template if:true={donorSegment}>
+        <lightning-card variant="Narrow" title={donorSegment} icon-name="utility:groups">
+            <ul class="slds-has-dividers_bottom-space">
+                <template if:true={majorDonorStatus}>
+                    <c-acc-status-widget status-label={majorDonorStatus} status-applied-date={majorDonorStatusAppliedDate}></c-acc-status-widget>
+                </template>
+                <template if:true={midDonorStatus}>
+                    <c-acc-status-widget status-label={midDonorStatus} status-applied-date={midDonorStatusAppliedDate}></c-acc-status-widget>
+                </template>
+                <template if:true={sustainerStatus}>
+                    <c-acc-status-widget status-label={sustainerStatus} status-applied-date={sustainerStatusAppliedDate}></c-acc-status-widget>
+                </template>
+                <template if:true={donorStatus}>
+                    <c-acc-status-widget status-label={donorStatus} status-applied-date={donorStatusAppliedDate}></c-acc-status-widget>
+                </template>
+            </ul>
+            <template if:true={canUpOrDowngrade}>
+                <div slot="footer">
+                    <lightning-button-group>
+                        <template if:true={canUpgradeMajor}>
+                            <lightning-button-stateful 
+                                label-when-off="Set As Major Donor Prospect"
+                                label-when-on="Major Donor Prospect"
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                selected={isMajorDonorProspect}
+                                onclick={handleProspect}
+                                name="major"
+                                size="x-small"
+                                >
+                            </lightning-button-stateful>
+                        </template>
+                        <template if:true={canUpgradeMid}>
+                            <lightning-button-stateful 
+                                label-when-off="Set As Mid Level Donor Prospect"
+                                label-when-on="Mid Level Donor Prospect"
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                selected={isMidDonorProspect}
+                                onclick={handleProspect}
+                                name="mid"
+                                size="x-small"
+                                >
+                            </lightning-button-stateful>
+                        </template>
+                        <template if:true={canDowngradeMajor}>
+                            <lightning-button-stateful 
+                                label-when-off="Set As Former Major Donor"
+                                label-when-on="Former Major Donor"
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                selected={isMajorDonorDowngrade}
+                                onclick={handleDowngrade}
+                                name="major"
+                                size="x-small"
+                                >
+                            </lightning-button-stateful>
+                        </template>
+                        <template if:true={canDowngradeMid}>
+                            <lightning-button-stateful 
+                                label-when-off="Set As Former Mid Level"
+                                label-when-on="Former Mid Level"
+                                icon-name-when-off="utility:add"
+                                icon-name-when-on="utility:check"
+                                selected={isMidDonorDowngrade}
+                                onclick={handleDowngrade}
+                                name="mid"
+                                size="x-small"
+                                >
+                            </lightning-button-stateful>
+                        </template>
+                    </lightning-button-group>
+                </div>
+            </template>
+        </lightning-card>
+    </template>
+    
+</template>

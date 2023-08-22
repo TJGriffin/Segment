@@ -25,6 +25,11 @@
         <default>false</default>
         <label>Prospect</label>
     </customValue>
+    <customValue>
+        <fullName>Former</fullName>
+        <default>false</default>
+        <label>Former</label>
+    </customValue>
     <masterLabel>Segment Status</masterLabel>
     <sorted>false</sorted>
 </GlobalValueSet>

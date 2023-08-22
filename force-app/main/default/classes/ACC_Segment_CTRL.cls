@@ -21,4 +21,38 @@ public with sharing class ACC_Segment_CTRL {
             
         return failedId;
     }
+
+    @auraEnabled
+    public static String setProspectStatus(String recordId,String fieldName){
+        String message;
+        Id accountId = ACC_Giving_SVC.getAccountIdFromRecordId(recordId);
+        String failedId;
+        Account acc = new Account(Id=accountId);
+        acc.put(fieldName,'Prospect');
+
+        try {
+            update acc;
+            message = 'Success';
+        } catch(Exception e){
+            message = e.getMessage();
+        }
+        return message;
+    }
+
+    @auraEnabled
+    public static String downgradeDonor(String recordId,String fieldName){
+        String message;
+        Id accountId = ACC_Giving_SVC.getAccountIdFromRecordId(recordId);
+        String failedId;
+        Account acc = new Account(Id=accountId);
+        acc.put(fieldName,'Former');
+
+        try {
+            update acc;
+            message = 'Success';
+        } catch(Exception e){
+            message = e.getMessage();
+        }
+        return message;
+    }
 }

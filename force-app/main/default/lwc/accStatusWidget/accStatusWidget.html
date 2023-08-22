@@ -1,0 +1,15 @@
+<template>
+    <lightning-tile label={statusLabel} type="media">
+        <lightning-avatar slot="media" src="/bad/image/url.jpg"  fallback-icon-name="standard:dataset" alternative-text={statusLabel}></lightning-avatar>
+        <ul class="slds-list_horizontal slds-has-dividers_right">
+            <li class="slds-item">Applied Date</li>
+            <li class="slds-item"><lightning-formatted-date-time value={statusAppliedDate}></lightning-formatted-date-time></li>
+        </ul>
+        <template if:true={isDowngrade}>
+            <ul class="slds-list_horizontal slds-has-dividers_right">
+                <li class="slds-item">Downgraded on <lightning-formatted-date-time value={downgradeDate}></lightning-formatted-date-time></li>
+                <li class="slds-item">Downgraded by <lightning-formatted-url value={userLink} target="_blank" label={downgradeByName}></lightning-formatted-url></li>
+            </ul>  
+        </template>
+    </lightning-tile>
+</template>

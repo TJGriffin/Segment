@@ -101,6 +101,16 @@
                 <default>false</default>
                 <label>Deep Lapsed Donor</label>
             </value>
+            <value>
+                <fullName>Former Major Donor</fullName>
+                <default>false</default>
+                <label>Former Major Donor</label>
+            </value>
+            <value>
+                <fullName>Former Mid Level Donor</fullName>
+                <default>false</default>
+                <label>Former Mid Level Donor</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

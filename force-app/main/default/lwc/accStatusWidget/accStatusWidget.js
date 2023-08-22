@@ -8,6 +8,9 @@ export default class AccStatusWidget extends LightningElement {
     @api downgradeById;
     @api downgradeDate;
 
+    get isDowngrade(){
+        return typeof this.downgradeById !== undefined && this.downgradeById != null;
+    }
     get displayLabel(){
         return this.statusField+': '+this.statusLabel;
     }

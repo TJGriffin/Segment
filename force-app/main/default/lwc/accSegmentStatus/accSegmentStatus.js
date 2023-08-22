@@ -17,8 +17,10 @@ import ACCOUNT_SUSTAINER_STATUS from '@salesforce/schema/Account.Sustainer_Statu
 import ACCOUNT_SUSTAINER_STATUS_APPLIED_DATE from '@salesforce/schema/Account.Sustainer_Status_Applied_Date__c';
 import ACCOUNT_MAJOR_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Account.Major_Donor_Downgrade_Date__c';
 import ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY from '@salesforce/schema/Account.Major_Donor_Downgrade_By__c';
+import ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME from '@salesforce/schema/Account.Major_Donor_Downgrade_By__r.Name';
 import ACCOUNT_MID_DONOR_DOWNGRADe_DATE from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_Date__c';
 import ACCOUNT_MID_DONOR_DOWNGRADE_BY  from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_By__c';
+import ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME  from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_By__r.Name';
 import CONTACT_SEGMENT from '@salesforce/schema/Contact.Donor_Segment__c';
 import CONTACT_SEGMENT_APPLIED_DATE from '@salesforce/schema/Contact.Donor_Segment_Applied_Date__c';
 import CONTACT_DONOR_STATUS from '@salesforce/schema/Contact.Donor_Status__c';
@@ -31,8 +33,10 @@ import CONTACT_SUSTAINER_STATUS from '@salesforce/schema/Contact.Sustainer_Statu
 import CONTACT_SUSTAINER_STATUS_APPLIED_DATE from '@salesforce/schema/Contact.Sustainer_Status_Applied_Date__c';
 import CONTACT_MAJOR_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Contact.Major_Donor_Downgrade_Date__c';
 import CONTACT_MAJOR_DONOR_DOWNGRADE_BY from '@salesforce/schema/Contact.Major_Donor_Downgrade_By__c';
-import CONTACT_MID_DONOR_DOWNGRADe_DATE from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_Date__c';
+import CONTACT_MAJOR_DONOR_DOWNGRADE_BY_NAME from '@salesforce/schema/Contact.Major_Donor_Downgrade_By__r.Name';
+import CONTACT_MID_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_Date__c';
 import CONTACT_MID_DONOR_DOWNGRADE_BY  from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_By__c';
+import CONTACT_MID_DONOR_DOWNGRADE_BY_NAME  from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_By__r.Name';
 
 const ACCOUNT_FIELDS = [
 	ACCOUNT_SEGMENT,
@@ -48,7 +52,9 @@ const ACCOUNT_FIELDS = [
 	ACCOUNT_MAJOR_DONOR_DOWNGRADE_DATE,
 	ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY,
 	ACCOUNT_MID_DONOR_DOWNGRADe_DATE,
-	ACCOUNT_MID_DONOR_DOWNGRADE_BY
+	ACCOUNT_MID_DONOR_DOWNGRADE_BY,
+    ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME,
+    ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME
 ];
 const CONTACT_FIELDS = [    
 	CONTACT_SEGMENT,
@@ -63,8 +69,10 @@ const CONTACT_FIELDS = [
 	CONTACT_SUSTAINER_STATUS_APPLIED_DATE,
 	CONTACT_MAJOR_DONOR_DOWNGRADE_DATE,
 	CONTACT_MAJOR_DONOR_DOWNGRADE_BY,
-	CONTACT_MID_DONOR_DOWNGRADe_DATE,
-	CONTACT_MID_DONOR_DOWNGRADE_BY
+	CONTACT_MID_DONOR_DOWNGRADE_DATE,
+	CONTACT_MID_DONOR_DOWNGRADE_BY,
+    CONTACT_MID_DONOR_DOWNGRADE_BY_NAME,
+    CONTACT_MAJOR_DONOR_DOWNGRADE_BY_NAME
 
 ];
 
@@ -167,12 +175,18 @@ export default class AccSegmentStatus extends LightningElement {
     get midDonorDowngradeBy(){
         return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MID_DONOR_DOWNGRADE_BY) : getFieldValue(this.account.data,CONTACT_MID_DONOR_DOWNGRADE_BY);
     }
-
+    get midDonorDowngradeByName(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME) : getFieldValue(this.account.data,CONTACT_MID_DONOR_DOWNGRADE_BY_NAME);
+    }
+    get majorDonorDowngradeByName(){
+        return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME) : getFieldValue(this.account.data,CONTACT_MAJOR_DONOR_DOWNGRADE_BY_NAME);
+    }
     handleProspect(event){
         var status;
         var isMajor = event.target.name == 'major';
+        var isMid = event.target.name == 'mid';
         var fieldToSet = isMajor ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
-        status = (isMajor && this.isMajorDonorProspect) || (!isMajor && this.isMidDonorProspect) ? null : 'Prospect'; 
+        status = (isMajor && this.isMajorDonorProspect) || (isMid && this.isMidDonorProspect) ? null : 'Prospect'; 
         setProspect({recordId:this.recordId,fieldName:fieldToSet, status:status})
         .then((result)=>{
             this.showToast();

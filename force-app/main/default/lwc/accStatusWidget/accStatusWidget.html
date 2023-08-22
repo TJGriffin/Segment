@@ -1,9 +1,9 @@
 <template>
-    <lightning-tile label={statusLabel} type="media">
+    <lightning-tile label={displayLabel} type="media">
         <lightning-avatar slot="media" src="/bad/image/url.jpg"  fallback-icon-name="standard:dataset" alternative-text={statusLabel}></lightning-avatar>
         <ul class="slds-list_horizontal slds-has-dividers_right">
             <li class="slds-item">Applied Date</li>
-            <li class="slds-item"><lightning-formatted-date-time value={statusAppliedDate}></lightning-formatted-date-time></li>
+            <li class="slds-item"><lightning-formatted-date-time value={statusDate}></lightning-formatted-date-time></li>
         </ul>
         <template if:true={isDowngrade}>
             <ul class="slds-list_horizontal slds-has-dividers_right">

@@ -86,7 +86,15 @@ export default class AccSegmentStatus extends LightningElement {
     get isMajorDonorProspect(){
         return this.majorDonorStatus != null && this.majorDonorStatus == 'Prospect';
     }
-
+    get isMidDonorProspect(){
+        return this.midDonorStatus != null && this.midDonorStatus == 'Prospect';
+    }
+    get isMajorDonorDowngrade(){
+        return this.majorDonorDowngradeDate != null;
+    }
+    get isMidDonorDowngrade(){
+        return this.midDonorDowngradeDate != null;
+    }
     get canUpOrDowngrade(){
         return this.canUpgradeMajor || this.canDowngradeMajor || this.canUpgradeMid || this.canDowngradeMid;
     }
@@ -160,8 +168,11 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     handleProspect(event){
-        var fieldToSet = event.target.name == 'major' ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
-        setProspect({recordId:this.recordId,fieldName:fieldToSet})
+        var status;
+        var isMajor = event.target.name == 'major';
+        var fieldToSet = isMajor ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
+        status = (isMajor && this.isMajorDonorProspect) || (!isMajor && this.isMidDonorProspect) ? null : 'Prospect'; 
+        setProspect({recordId:this.recordId,fieldName:fieldToSet, status:status})
         .then((result)=>{
             this.showToast();
         })

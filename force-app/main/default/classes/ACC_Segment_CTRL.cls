@@ -47,8 +47,10 @@ public with sharing class ACC_Segment_CTRL {
         Account acc = new Account(Id=accountId);
         acc.put(fieldName,status);
         if(String.isBlank(status)){
-            String dateFieldName = fieldName.replace('__c','_Applied_Date__c');
+            String dateFieldName = fieldName.replace('Status__c','Downgrade_Date__c');
             acc.put(dateFieldName,null);
+            String userField = fieldName.replace('Status__c','Downgrade_By__c');
+            acc.put(userField,null);
         }
 
         try {

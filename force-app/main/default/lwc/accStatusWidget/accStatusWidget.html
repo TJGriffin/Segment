@@ -1,15 +1,19 @@
 <template>
     <lightning-tile label={displayLabel} type="media">
         <lightning-avatar slot="media" src="/bad/image/url.jpg"  fallback-icon-name="standard:dataset" alternative-text={statusLabel}></lightning-avatar>
-        <ul class="slds-list_horizontal slds-has-dividers_right">
-            <li class="slds-item">Applied Date</li>
-            <li class="slds-item"><lightning-formatted-date-time value={statusDate}></lightning-formatted-date-time></li>
-        </ul>
+        <dl class="slds-list_horizontal slds-wrap">
+            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Applied Date:</dt>
+            <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-date-time value={statusDate}></lightning-formatted-date-time></dd>
+        </dl>
         <template if:true={isDowngrade}>
-            <ul class="slds-list_horizontal slds-has-dividers_right">
-                <li class="slds-item">Downgraded on <lightning-formatted-date-time value={downgradeDate}></lightning-formatted-date-time></li>
-                <li class="slds-item">Downgraded by <lightning-formatted-url value={userLink} target="_blank" label={downgradeByName}></lightning-formatted-url></li>
-            </ul>  
+            <dl class="slds-list_horizontal slds-wrap">
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Downgraded on:</dt>
+                <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-date-time value={downgradeDate}></lightning-formatted-date-time></dd>
+            </dl>  
+            <dl class="slds-list_horizontal slds-wrap">
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Downgraded by :</dt>
+                <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-url value={userLink} target="_blank" label={downgradeByName}></lightning-formatted-url></dd>
+            </dl>               
         </template>
     </lightning-tile>
 </template>

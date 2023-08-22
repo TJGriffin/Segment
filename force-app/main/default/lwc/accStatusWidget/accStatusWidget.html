@@ -2,16 +2,16 @@
     <lightning-tile label={displayLabel} type="media">
         <lightning-avatar slot="media" src="/bad/image/url.jpg"  fallback-icon-name="standard:dataset" alternative-text={statusLabel}></lightning-avatar>
         <dl class="slds-list_horizontal slds-wrap">
-            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Applied Date:</dt>
+            <dt class="slds-item_label slds-text-color_weak" title="Applied Date">Applied Date:</dt>
             <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-date-time value={statusDate}></lightning-formatted-date-time></dd>
         </dl>
         <template if:true={isDowngrade}>
             <dl class="slds-list_horizontal slds-wrap">
-                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Downgraded on:</dt>
+                <dt class="slds-item_label slds-text-color_weak" title="Applied Date">Downgraded on:</dt>
                 <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-date-time value={downgradeDate}></lightning-formatted-date-time></dd>
             </dl>  
             <dl class="slds-list_horizontal slds-wrap">
-                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Applied Date">Downgraded by :</dt>
+                <dt class="slds-item_label slds-text-color_weak" title="Applied Date">Downgraded by :</dt>
                 <dd class="slds-item_detail slds-truncate" title="Description for first label"><lightning-formatted-url value={userLink} target="_blank" label={downgradeByName}></lightning-formatted-url></dd>
             </dl>               
         </template>

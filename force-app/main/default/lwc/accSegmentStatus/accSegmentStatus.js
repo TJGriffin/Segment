@@ -175,10 +175,10 @@ export default class AccSegmentStatus extends LightningElement {
     get midDonorDowngradeBy(){
         return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MID_DONOR_DOWNGRADE_BY) : getFieldValue(this.account.data,CONTACT_MID_DONOR_DOWNGRADE_BY);
     }
-    get midDonorDowngradeByName(){
+    get midDonorDowngradegtName(){
         return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME) : getFieldValue(this.account.data,CONTACT_MID_DONOR_DOWNGRADE_BY_NAME);
     }
-    get majorDonorDowngradeByName(){
+    get majorDonorDowngradeName(){
         return this.isAccount ? getFieldValue(this.account.data,ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME) : getFieldValue(this.account.data,CONTACT_MAJOR_DONOR_DOWNGRADE_BY_NAME);
     }
     handleProspect(event){

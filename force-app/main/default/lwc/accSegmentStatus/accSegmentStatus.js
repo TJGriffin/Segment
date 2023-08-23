@@ -18,7 +18,7 @@ import ACCOUNT_SUSTAINER_STATUS_APPLIED_DATE from '@salesforce/schema/Account.Su
 import ACCOUNT_MAJOR_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Account.Major_Donor_Downgrade_Date__c';
 import ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY from '@salesforce/schema/Account.Major_Donor_Downgrade_By__c';
 import ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME from '@salesforce/schema/Account.Major_Donor_Downgrade_By__r.Name';
-import ACCOUNT_MID_DONOR_DOWNGRADe_DATE from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_Date__c';
+import ACCOUNT_MID_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_Date__c';
 import ACCOUNT_MID_DONOR_DOWNGRADE_BY  from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_By__c';
 import ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME  from '@salesforce/schema/Account.Mid_Level_Donor_Downgrade_By__r.Name';
 import CONTACT_SEGMENT from '@salesforce/schema/Contact.Donor_Segment__c';
@@ -51,7 +51,7 @@ const ACCOUNT_FIELDS = [
 	ACCOUNT_SUSTAINER_STATUS_APPLIED_DATE,
 	ACCOUNT_MAJOR_DONOR_DOWNGRADE_DATE,
 	ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY,
-	ACCOUNT_MID_DONOR_DOWNGRADe_DATE,
+	ACCOUNT_MID_DONOR_DOWNGRADE_DATE,
 	ACCOUNT_MID_DONOR_DOWNGRADE_BY,
     ACCOUNT_MID_DONOR_DOWNGRADE_BY_NAME,
     ACCOUNT_MAJOR_DONOR_DOWNGRADE_BY_NAME

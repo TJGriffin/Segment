@@ -323,6 +323,7 @@ public class GiftItem implements Comparable {
 					isClosed = (Boolean) sobj.get('IsClosed');
 					writtenOff = sobj.get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.get('npe01__Amount_Written_Off__c') : 0;
 					received = sobj.get('npe01__Payments_Made__c') != null ? (Decimal) sobj.get('npe01__Payments_Made__c') : 0;
+					pledgeAmountOutstanding = stage.equalsIgnoreCase('Pledged') || isWon ? pledgeAmountOutstanding : 0;
 				}
 				when 'npsp__account_soft_credit__c','npsp__partial_soft_credit__c' {
 					writtenOff = sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.getSObject('npsp__Opportunity__r').get('npe01__Amount_Written_Off__c') : 0;
@@ -333,6 +334,7 @@ public class GiftItem implements Comparable {
 					isWon = (Boolean) sobj.getSObject('npsp__Opportunity__r').get('IsWon');
 					isClosed = (Boolean) sobj.getSObject('npsp__Opportunity__r').get('IsClosed');
 					received = sobj.getSObject('npsp__Opportunity__r').get('npe01__Payments_Made__c') != null ? (Decimal) sobj.getSObject('npsp__Opportunity__r').get('npe01__Payments_Made__c') : 0;
+					pledgeAmountOutstanding = stage.equalsIgnoreCase('Pledged') || isWon ? pledgeAmountOutstanding : 0;
 				}
 				when 'opportunitycontactrole' {
 					writtenOff = sobj.getSObject('Opportunity').get('npe01__Amount_Written_Off__c') != null ? (Decimal) sobj.getSObject('Opportunity').get('npe01__Amount_Written_Off__c') : 0;
@@ -343,6 +345,7 @@ public class GiftItem implements Comparable {
 					isWon = (Boolean) sobj.getSObject('Opportunity').get('IsWon');
 					isClosed = (Boolean) sobj.getSObject('Opportunity').get('IsClosed');
 					received = sobj.getSObject('Opportunity').get('npe01__Payments_Made__c') != null ? (Decimal) sobj.getSObject('Opportunity').get('npe01__Payments_Made__c') : 0;
+					pledgeAmountOutstanding = stage.equalsIgnoreCase('Pledged') || isWon ? pledgeAmountOutstanding : 0;
 				}
 			}
 
@@ -353,8 +356,9 @@ public class GiftItem implements Comparable {
 						returnAmount = giftAmount;
 				}
 				when 'pledged' {
-					if((isWon && pledgedAmountOutstanding > 0) || stage.equalsIgnoreCase('pledged'))
+					if((isWon && pledgedAmountOutstanding > 0) || stage.equalsIgnoreCase('pledged')){
 						returnAmount = pledgedAmountOutstanding > 0 ? pledgedAmountOutstanding : giftAmount; 
+					}
 				}
 				when 'lost' {
 					if(isclosed && !isWon) {

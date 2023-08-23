@@ -105,10 +105,10 @@ export default class AccSegmentStatus extends LightningElement {
         return this.midDonorStatus != null && this.midDonorStatus == 'Active';
     }
     get isMajorDonorDowngrade(){
-        return this.majorDonorDowngradeDate != null;
+        return typeof this.majorDonorDowngradeDate !== undefined && this.majorDonorDowngradeDate != null;
     }
     get isMidDonorDowngrade(){
-        return this.midDonorDowngradeDate != null;
+        return typeof this.midDonorDowngradeDate !== undefined && this.midDonorDowngradeDate != null;
     }
     get canUpOrDowngrade(){
         return this.canUpgradeMajor || this.canDowngradeMajor || this.canUpgradeMid || this.canDowngradeMid;
@@ -208,7 +208,7 @@ export default class AccSegmentStatus extends LightningElement {
         var isMid = event.target.name == 'mid';
         var fieldToSet = isMajor ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
         var status = (isMajor && this.isMajorDonorProspect) || (isMid && this.isMidDonorProspect) ? null : 'Former';
-        setDowngrade({recordId:this.recordId,fieldName:fieldToSet})
+        setDowngrade({recordId:this.recordId,fieldName:fieldToSet,status:status})
         .then((result)=>{
             this.showToast();
             refreshApex(this.account);

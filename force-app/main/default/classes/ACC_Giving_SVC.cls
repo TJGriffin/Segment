@@ -733,7 +733,7 @@ public with sharing class ACC_Giving_SVC {
 			}
             AnnualGiftHistory agh = giftHistory.get(giftYear);
             agh.softCreditAmount += (crole.Opportunity.Amount - crole.Opportunity.npe01__Amount_Outstanding__c);
-			agh.pledgedAmountOutstanding += crole.Opportunity.npe01__Amount_Outstanding__c;
+			agh.pledgedAmountOutstanding += GiftItem.calculateAmount('pledged', crole);
             agh.writtenOffAmount += crole.Opportunity.npe01__Amount_Written_Off__c;
             agh.totalAmount = agh.hardCreditAmount + agh.softCreditAmount;
             agh.committedAmount = agh.totalAmount - agh.writtenOffAmount;

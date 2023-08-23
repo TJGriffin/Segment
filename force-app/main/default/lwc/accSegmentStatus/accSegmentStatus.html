@@ -40,60 +40,62 @@
                 </ul>
                 <template if:true={canUpOrDowngrade}>
                     <div slot="footer">
-                        <lightning-button-group>
-                            <template if:true={canUpgradeMajor}>
-                                <lightning-button-stateful 
-                                    label-when-off="Set Major Prospect"
-                                    label-when-on="Major Prospect"
-                                    icon-name-when-off="utility:add"
-                                    icon-name-when-on="utility:check"
-                                    selected={isMajorDonorProspect}
-                                    onclick={handleProspect}
-                                    name="major"
-                                    size="x-small"
-                                    >
-                                </lightning-button-stateful>
-                            </template>
-                            <template if:true={canUpgradeMid}>
-                                <lightning-button-stateful 
-                                    label-when-off="Set Mid Prospect"
-                                    label-when-on="Mid Prospect"
-                                    icon-name-when-off="utility:add"
-                                    icon-name-when-on="utility:check"
-                                    selected={isMidDonorProspect}
-                                    onclick={handleProspect}
-                                    name="mid"
-                                    size="x-small"
-                                    >
-                                </lightning-button-stateful>
-                            </template>
-                            <template if:true={canDowngradeMajor}>
-                                <lightning-button-stateful 
-                                    label-when-off="Downgrade Major"
-                                    label-when-on="Former Major"
-                                    icon-name-when-off="utility:add"
-                                    icon-name-when-on="utility:check"
-                                    selected={isMajorDonorDowngrade}
-                                    onclick={handleDowngrade}
-                                    name="major"
-                                    size="x-small"
-                                    >
-                                </lightning-button-stateful>
-                            </template>
-                            <template if:true={canDowngradeMid}>
-                                <lightning-button-stateful 
-                                    label-when-off="Downgrade Mid"
-                                    label-when-on="Former Mid"
-                                    icon-name-when-off="utility:add"
-                                    icon-name-when-on="utility:check"
-                                    selected={isMidDonorDowngrade}
-                                    onclick={handleDowngrade}
-                                    name="mid"
-                                    size="x-small"
-                                    >
-                                </lightning-button-stateful>
-                            </template>
-                        </lightning-button-group>
+                        <div class="slds-m-top_x-small">
+                            <lightning-button-group>
+                                <template if:true={canUpgradeMajor}>
+                                    <lightning-button-stateful 
+                                        label-when-off="Set Major Prospect"
+                                        label-when-on="Major Prospect"
+                                        icon-name-when-off="utility:add"
+                                        icon-name-when-on="utility:check"
+                                        selected={isMajorDonorProspect}
+                                        onclick={handleProspect}
+                                        name="major"
+                                        size="x-small"
+                                        >
+                                    </lightning-button-stateful>
+                                </template>
+                                <template if:true={canUpgradeMid}>
+                                    <lightning-button-stateful 
+                                        label-when-off="Set Mid Prospect"
+                                        label-when-on="Mid Prospect"
+                                        icon-name-when-off="utility:add"
+                                        icon-name-when-on="utility:check"
+                                        selected={isMidDonorProspect}
+                                        onclick={handleProspect}
+                                        name="mid"
+                                        size="x-small"
+                                        >
+                                    </lightning-button-stateful>
+                                </template>
+                                <template if:true={canDowngradeMajor}>
+                                    <lightning-button-stateful 
+                                        label-when-off="Downgrade Major"
+                                        label-when-on="Former Major"
+                                        icon-name-when-off="utility:add"
+                                        icon-name-when-on="utility:check"
+                                        selected={isMajorDonorDowngrade}
+                                        onclick={handleDowngrade}
+                                        name="major"
+                                        size="x-small"
+                                        >
+                                    </lightning-button-stateful>
+                                </template>
+                                <template if:true={canDowngradeMid}>
+                                    <lightning-button-stateful 
+                                        label-when-off="Downgrade Mid"
+                                        label-when-on="Former Mid"
+                                        icon-name-when-off="utility:add"
+                                        icon-name-when-on="utility:check"
+                                        selected={isMidDonorDowngrade}
+                                        onclick={handleDowngrade}
+                                        name="mid"
+                                        size="x-small"
+                                        >
+                                    </lightning-button-stateful>
+                                </template>
+                            </lightning-button-group>
+                        </div>
                     </div>
                 </template>
             </div>

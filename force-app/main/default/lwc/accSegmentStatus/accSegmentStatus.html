@@ -43,8 +43,8 @@
                         <lightning-button-group>
                             <template if:true={canUpgradeMajor}>
                                 <lightning-button-stateful 
-                                    label-when-off="Set As Major Donor Prospect"
-                                    label-when-on="Major Donor Prospect"
+                                    label-when-off="Set Major Prospect"
+                                    label-when-on="Major Prospect"
                                     icon-name-when-off="utility:add"
                                     icon-name-when-on="utility:check"
                                     selected={isMajorDonorProspect}
@@ -56,8 +56,8 @@
                             </template>
                             <template if:true={canUpgradeMid}>
                                 <lightning-button-stateful 
-                                    label-when-off="Set As Mid Level Donor Prospect"
-                                    label-when-on="Mid Level Donor Prospect"
+                                    label-when-off="Set Mid Prospect"
+                                    label-when-on="Mid Prospect"
                                     icon-name-when-off="utility:add"
                                     icon-name-when-on="utility:check"
                                     selected={isMidDonorProspect}
@@ -69,8 +69,8 @@
                             </template>
                             <template if:true={canDowngradeMajor}>
                                 <lightning-button-stateful 
-                                    label-when-off="Set As Former Major Donor"
-                                    label-when-on="Former Major Donor"
+                                    label-when-off="Downgrade Major"
+                                    label-when-on="Former Major"
                                     icon-name-when-off="utility:add"
                                     icon-name-when-on="utility:check"
                                     selected={isMajorDonorDowngrade}
@@ -82,8 +82,8 @@
                             </template>
                             <template if:true={canDowngradeMid}>
                                 <lightning-button-stateful 
-                                    label-when-off="Set As Former Mid Level"
-                                    label-when-on="Former Mid Level"
+                                    label-when-off="Downgrade Mid"
+                                    label-when-on="Former Mid"
                                     icon-name-when-off="utility:add"
                                     icon-name-when-on="utility:check"
                                     selected={isMidDonorDowngrade}

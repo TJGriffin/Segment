@@ -115,11 +115,11 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     get canUpgradeMajor(){
-        return (this.majorDonorStatus == null || this.majorDonorStatus != 'Active') && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
+        return !this.isActiveMajor && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
     }
 
     get canUpgradeMid(){
-        return (this.midDonorStatus == null || this.midDonorStatus != 'Active')  && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
+        return !this.isActiveMid && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
     }
 
     get canDowngradeMajor(){

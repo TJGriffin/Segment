@@ -17,4 +17,25 @@ export default class AccStatusWidget extends LightningElement {
     get downgradeLink(){
         return '/'+this.downgradeById;
     }
+    get iconType(){
+        var iconName = 'standard:dataset';
+        switch(statusLabel){
+            case 'Active':
+                iconName = 'standard:opportunity';
+            break;
+            case 'Former':
+                iconName = 'standard:empty';
+            break;
+            case 'Lapsed':
+                iconName = 'standard:thanks_loading';
+            break;
+            case 'Deep Lapsed':
+                iconName = 'standard:thanks_loading';
+            break;
+            case 'Extended Lapsed':
+                iconName = 'standard:thanks_loading';
+            break;
+        }
+        return iconName;
+    }
 }

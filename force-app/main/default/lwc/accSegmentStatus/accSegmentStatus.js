@@ -98,6 +98,12 @@ export default class AccSegmentStatus extends LightningElement {
     get isMidDonorProspect(){
         return this.midDonorStatus != null && this.midDonorStatus == 'Prospect';
     }
+    get isActiveMajor(){
+        return this.majorDonorStatus != null && this.majorDonorStatus == 'Active';
+    }
+    get isActiveMid(){
+        return this.midDonorStatus != null && this.midDonorStatus == 'Active';
+    }
     get isMajorDonorDowngrade(){
         return this.majorDonorDowngradeDate != null;
     }
@@ -109,19 +115,19 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     get canUpgradeMajor(){
-        return this.majorDonorStatus == null || this.majorDonorStatus != 'Active';
+        return (this.majorDonorStatus == null || this.majorDonorStatus != 'Active') && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
     }
 
     get canUpgradeMid(){
-        return this.midDonorStatus == null || this.midDonorStatus != 'Active';
+        return (this.midDonorStatus == null || this.midDonorStatus != 'Active')  && !this.isMajorDonorDowngrade && !this.isMidDonorDowngrade;
     }
 
     get canDowngradeMajor(){
-        return this.majorDonorStatus != null && this.majorDonorStatus != 'Former' && this.majorDonorStatus != 'Prospect';
+        return this.majorDonorStatus != null && !isMajorDonorDowngrade && !this.isMajorDonorProspect;
     }
 
     get canDowngradeMid(){
-        return this.midDonorStatus != null && this.midDonorStatus != 'Former' && this.midDonorStatus != 'Prospect';
+        return this.midDonorStatus != null && !this.isMidDonorDowngrade && !this.isMidDonorProspect;
     }
 
     @wire(
@@ -198,7 +204,10 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     handleDowngrade(event){
-        var fieldToSet = event.target.name == 'major' ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
+        var isMajor = event.target.name == 'major';
+        var isMid = event.target.name == 'mid';
+        var fieldToSet = isMajor ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
+        var status = (isMajor && this.isMajorDonorProspect) || (isMid && this.isMidDonorProspect) ? null : 'Former';
         setDowngrade({recordId:this.recordId,fieldName:fieldToSet})
         .then((result)=>{
             this.showToast();

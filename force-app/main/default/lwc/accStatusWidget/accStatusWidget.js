@@ -19,7 +19,7 @@ export default class AccStatusWidget extends LightningElement {
     }
     get iconType(){
         var iconName = 'standard:dataset';
-        switch(statusLabel){
+        switch(this.statusLabel){
             case 'Active':
                 iconName = 'standard:opportunity';
             break;

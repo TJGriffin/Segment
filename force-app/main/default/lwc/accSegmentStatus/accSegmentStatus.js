@@ -93,16 +93,16 @@ export default class AccSegmentStatus extends LightningElement {
     }
 
     get isMajorDonorProspect(){
-        return this.majorDonorStatus != null && this.majorDonorStatus == 'Prospect';
+        return typeof this.majorDonorStatus !== undefined && this.majorDonorStatus != null && this.majorDonorStatus == 'Prospect';
     }
     get isMidDonorProspect(){
-        return this.midDonorStatus != null && this.midDonorStatus == 'Prospect';
+        return typeof this.midDonorStatus !== undefined && this.midDonorStatus != null && this.midDonorStatus == 'Prospect';
     }
     get isActiveMajor(){
-        return this.majorDonorStatus != null && this.majorDonorStatus == 'Active';
+        return typeof this.majorDonorStatus !== undefined && this.majorDonorStatus != null && this.majorDonorStatus == 'Active';
     }
     get isActiveMid(){
-        return this.midDonorStatus != null && this.midDonorStatus == 'Active';
+        return typeof this.midDonorStatus !== undefined && this.midDonorStatus != null && this.midDonorStatus == 'Active';
     }
     get isMajorDonorDowngrade(){
         return typeof this.majorDonorDowngradeDate !== undefined && this.majorDonorDowngradeDate != null;

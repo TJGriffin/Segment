@@ -191,7 +191,7 @@ public with sharing class ACC_Segment_SVC {
                             String dateField = segmentFieldDates.get(fld);
                             obj.put(dateField,Date.Today());
                             if(ACC_Segment_UTIL.manualOverride 
-                                && val.containsIgnoreCase('Former') 
+                                && (val.containsIgnoreCase('Former') || val.containsIgnoreCase('Downgraded'))
                                 && downgradeFields.containsKey(fld)){
                                 for(String downgradeFld:downgradeFields.get(fld)){
                                     if(downgradeFld.containsIgnoreCase('Date')){
@@ -252,10 +252,10 @@ public with sharing class ACC_Segment_SVC {
 	********************************************************************************************************/
     public static Boolean getLowerLevelStatusIsGreater(String lowerLevelStatus, String higherLevelStatus){
         Boolean lowerLevelStatusIsGreater = false;
-        if(higherLevelStatus == null)
+        if(higherLevelStatus == null || higherLevelStatus == 'Former' || higherLevelStatus == 'Downgraded')
             return true;
         
-        if(lowerLevelStatus == null)
+        if(lowerLevelStatus == null || lowerlevelStatus == 'Former' || lowerLevelStatus == 'Downgraded')
             return false;
 
         if(higherLevelStatus == 'Active' || higherLevelStatus == 'Prospect')

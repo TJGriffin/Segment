@@ -30,6 +30,11 @@
         <default>false</default>
         <label>Former</label>
     </customValue>
+    <customValue>
+        <fullName>Downgraded</fullName>
+        <default>false</default>
+        <label>Downgraded</label>
+    </customValue>
     <masterLabel>Segment Status</masterLabel>
     <sorted>false</sorted>
 </GlobalValueSet>

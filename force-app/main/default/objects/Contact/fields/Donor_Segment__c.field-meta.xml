@@ -106,6 +106,16 @@
                 <default>false</default>
                 <label>Former Mid Level Donor</label>
             </value>
+            <value>
+                <fullName>Downgraded Mid Level Donor</fullName>
+                <default>false</default>
+                <label>Downgraded Mid Level Donor</label>
+            </value>
+            <value>
+                <fullName>Downgraded Major Donor</fullName>
+                <default>false</default>
+                <label>Downgraded Major Donor</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

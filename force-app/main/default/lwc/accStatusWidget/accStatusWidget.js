@@ -1,15 +1,30 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
+import USER_NAME from '@salesforce/schema/User.Name';
+import { getRecord,getFieldValue} from 'lightning/uiRecordApi';
+
+const USERFIELDS = [USER_NAME];
 
 export default class AccStatusWidget extends LightningElement {
     @api statusField;
     @api statusLabel;
     @api statusDate;
-    @api downgradeByName;
+    
     @api downgradeById;
     @api downgradeDate;
 
+    get fields(){
+        return USERFIELDS;
+    }
+
+
+    @wire(getRecord,{recordId:'$downgradeById',fields:'$fields'})
+    userData;
+
     get isDowngrade(){
         return typeof this.downgradeById !== undefined && this.downgradeById != null;
+    }
+    get downgradeByName(){
+        return this.isDowngrade ? getFieldValue(this.userData.data,USER_NAME) : undefined;
     }
     get displayLabel(){
         return this.statusField+': '+this.statusLabel;

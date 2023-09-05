@@ -38,6 +38,7 @@ import CONTACT_MID_DONOR_DOWNGRADE_DATE from '@salesforce/schema/Contact.Mid_Lev
 import CONTACT_MID_DONOR_DOWNGRADE_BY  from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_By__c';
 import CONTACT_MID_DONOR_DOWNGRADE_BY_NAME  from '@salesforce/schema/Contact.Mid_Level_Donor_Downgrade_By__r.Name';
 
+
 const ACCOUNT_FIELDS = [
 	ACCOUNT_SEGMENT,
 	ACCOUNT_SEGMENT_APPLIED_DATE,

@@ -207,7 +207,7 @@ export default class AccSegmentStatus extends LightningElement {
         var isMajor = event.target.name == 'major';
         var isMid = event.target.name == 'mid';
         var fieldToSet = isMajor ? 'Major_Donor_Status__c' : 'Mid_Level_Donor_Status__c';
-        var status = (isMajor && this.isMajorDonorProspect) || (isMid && this.isMidDonorProspect) ? null : 'Former';
+        var status = (isMajor && this.isMajorDonorProspect) || (isMid && this.isMidDonorProspect) ? null : 'Downgrade';
         setDowngrade({recordId:this.recordId,fieldName:fieldToSet,status:status})
         .then((result)=>{
             this.showToast();

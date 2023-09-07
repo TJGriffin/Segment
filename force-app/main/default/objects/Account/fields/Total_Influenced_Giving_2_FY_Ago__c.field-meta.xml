@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Influenced_Giving_2_FY_Ago__c</fullName>
+    <description>Field used to capture Influenced Giving total over last two fiscal years. (used in soft credit rollup)</description>
+    <externalId>false</externalId>
+    <label>Total Influenced Giving 2 FY Ago</label>
+    <precision>16</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Currency</type>
+</CustomField>

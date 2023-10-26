@@ -501,7 +501,6 @@ public with sharing class ACC_Segment_SVC {
                 continue;
             } else {
                 acc.put(statusFieldName,null);
-                acc.put(dateFieldName,null);
             }
         }
         return acc;

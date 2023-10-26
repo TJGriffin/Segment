@@ -370,7 +370,7 @@ public with sharing class ACC_Segment_SVC {
             account.Donor_Status__c = statusLabel;
         }
 
-        if(statusAmount < 1000){
+        if(statusAmount < 1000 && statusAmount > 0){
             account.Donor_Status__c = statusLabel;
         }
         return account;

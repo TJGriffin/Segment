@@ -285,7 +285,8 @@ public without sharing class ACC_Segment_BATCH implements Database.Batchable<sOb
 			}
 			when CONTACT_SC,CONTACT_PSC{
 				soqlQuery += soqlQuery.containsIgnoreCase('WHERE') ? ' AND ' : ' WHERE ';
-				soqlQuery +='LastModifiedDate >= Last_N_Days:2';
+				soqlQuery +=' (LastModifiedDate >= Last_N_Days:2';
+				soqlQuery += mode == modeType.CONTACT_SC ? ' OR Opportunity.LastModifiedDate >= Last_N_Days:2) ' : ' OR npsp__Opportunity__r.LastModifiedDate >= Last_N_Days:2)';
 			}
 		}	
 		return soqlQuery;

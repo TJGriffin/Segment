@@ -6,11 +6,11 @@
 */
 public with sharing class CON_Badge_CTRL {
 
-	/*******************************************************************************************************
-	* @description retrieves a collection of strings to display as a badges
-	* @param recordId  the id of the contact or account
-	* @return List<String>
-	*/
+    /*******************************************************************************************************
+    * @description retrieves a collection of strings to display as a badges
+    * @param recordId  the id of the contact or account
+    * @return List<String>
+    */
     @AuraEnabled(cacheable=true)
     public static List<String> getCustomBadges(Id recordId) {
 
@@ -28,12 +28,12 @@ public with sharing class CON_Badge_CTRL {
 
     }
 
-	/**
-	* @description affiliation roles that should be displayed as badges
-	*/
+    /**
+    * @description affiliation roles that should be displayed as badges
+    */
     public static List<String> roles {
-        get {
-            if(roles == null){
+        get { if(roles == null)
+           {
                 // add the roles that should display as badges here
                 roles = new List<String>{'Board Member'};
             }
@@ -42,11 +42,11 @@ public with sharing class CON_Badge_CTRL {
         set;
     }
 
-	/*******************************************************************************************************
-	* @description retrieves a unique collection of badge labels from affiliation records
-	* @param Set<Id> contactIds
-	* @return Set<String>
-	*/
+    /*******************************************************************************************************
+    * @description retrieves a unique collection of badge labels from affiliation records
+    * @param Set<Id> contactIds
+    * @return Set<String>
+    */
     public static Set<String> getAffiliationBadges(Set<Id> contactIds){
         
         Map<String, String> labelStatus = new Map<String, String>();
@@ -54,18 +54,17 @@ public with sharing class CON_Badge_CTRL {
             SELECT 
                 Id,
                 npe5__Role__c,
-                Type__c,
+            	Type__c,
                 npe5__Status__c
             FROM npe5__Affiliation__c 
-            WHERE npe5__Contact__c IN:contactIds
-            AND (npe5__Role__c IN:roles
-            OR Type__c IN:roles)]){
-                String role = String.isBlank(aff.Type__c) ? aff.npe5__Role__c : aff.Type__c;
+            WHERE npe5__Contact__c IN:contactIds 
+            AND Account_Name__c = 'The Trevor Project'
+            AND Type__c IN:roles]){
                 if(aff.npe5__Status__c == 'Former'
-                    && !labelStatus.containsKey(role)) {
-                        labelStatus.put(role, aff.npe5__Status__c);
+                    && !labelStatus.containsKey(aff.Type__c)) {
+                        labelStatus.put(aff.Type__c, aff.npe5__Status__c);
                     } else {
-                        labelStatus.put(role, aff.npe5__Status__c);
+                        labelStatus.put(aff.Type__c, aff.npe5__Status__c);
                     }
             }
         Set<String> labels = new Set<String>();

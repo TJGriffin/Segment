@@ -8,11 +8,17 @@ private class CON_Badge_TEST {
         };
 
         Account acc = new Account(
-            Name='Foundation'
+            Name='The Trevor Project'
         );
         insert acc;
 
+        Account conAcc = new Account(
+            Name='contact household'
+        );
+        insert conAcc;
+
         List<Contact> cons = (List<Contact>) TestDataFactory.createSObjectList('Contact', 10, true);
+
         List<npe5__Affiliation__c> affs = new List<npe5__Affiliation__c>();
         Integer i=0;
         for(Contact con:cons){
@@ -21,6 +27,7 @@ private class CON_Badge_TEST {
                 npe5__Contact__c = con.Id,
                 npe5__Organization__c = acc.Id,
                 npe5__Role__c = 'Board Member',
+                Type__c = 'Board Member',
                 npe5__Status__c = status
             ));
 
@@ -34,14 +41,14 @@ private class CON_Badge_TEST {
 
     @isTest
     static void testController1() {
-        List<Id> contactIds = new List<Id>();
-        for(npe5__Affiliation__c aff:[SELECT Id,npe5__Contact__c FROM npe5__Affiliation__c]){
-            contactIds.add(aff.npe5__Contact__c);
-        }
-        Map<Id, Contact> contactMap = new Map<Id, Contact>([SELECT Id FROM Contact]);
-        List<String> badges = CON_Badge_CTRL.getCustomBadges(contactIds[0]);
-        Set<String> uniqueBadges = CON_Badge_CTRL.getAffiliationBadges(contactMap.keyset());
+        Map<Id, Contact> contactMap = new Map<Id, Contact>([SELECT Id FROM Contact]);        
 
+        List<npe5__Affiliation__c> formerAffs = [SELECT npe5__contact__c FROM npe5__Affiliation__c WHERE npe5__Status__c = 'Former'];
+        List<String> badges = CON_Badge_CTRL.getCustomBadges(formerAffs[0].npe5__Contact__c);
+        String badge = badges[0];
+        system.assert(badge.contains('Former'));
+        Set<String> uniqueBadges = CON_Badge_CTRL.getAffiliationBadges(contactMap.keyset());
+        system.assert(uniqueBadges.size()>0);
 
     }
 }

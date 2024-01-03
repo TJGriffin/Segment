@@ -10,7 +10,12 @@ public class GiftItem implements Comparable {
 		/**
 		* @description Id of threcord
 		*/
-		@auraEnabled public Id opportunityId {get;set;}				
+		@auraEnabled public Id opportunityId {get;set;}	
+		
+		/**
+		* @description Id of threcord
+		*/
+		@auraEnabled public Id recurringId {get;set;}		
 		/*******************************************************************************************************
 		* @description date of the gift
 		*/
@@ -31,7 +36,7 @@ public class GiftItem implements Comparable {
 		*/
 		@auraEnabled public String link {
 			get {
-				return '/'+opportunityId;
+				return isRecurring ? '/'+recurringId : '/'+opportunityId;
 			}
 			set;
 		}
@@ -162,6 +167,7 @@ public class GiftItem implements Comparable {
             this.StageName = opp.StageName;
             this.recordId = opp.Id;
 			this.opportunityId = opp.Id;
+			this.recurringId = opp.npe03__Recurring_Donation__c;
             this.oppAmount = opp.Amount;
             this.Name = opp.Name;
             this.closeDate = opp.CloseDate;

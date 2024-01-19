@@ -394,7 +394,7 @@ public class GiftItem implements Comparable {
         
         public static Decimal calculateAmount(String calcType, Opportunity opp, npe01__OppPayment__c pmt) {
             Decimal Amount = 0;
-            if(calcType=='won') {
+            if(calcType=='won' || calcType=='received') {
                 if(pmt.npe01__Paid__c) {
                     Amount = pmt.npe01__Payment_Amount__c;
                 }

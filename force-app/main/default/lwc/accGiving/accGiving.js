@@ -21,7 +21,7 @@ const SHORT_COLS = [
         },
         sortable:'true', initialWidth:120
     },
-    {label: 'Received', fieldName: 'totalAmount', type: 'currency',sortable:'true', initialWidth:120},
+    {label: 'Received', fieldName: 'receivedAmount', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Gift Total', fieldName: 'oppAmount', type: 'currency',sortable:'true', initialWidth:120}
 ];
 const COLUMNS = [
@@ -43,7 +43,7 @@ const COLUMNS = [
         },
         sortable:'true', initialWidth:120
     },
-    {label: 'Received', fieldName: 'totalAmount', type: 'currency',sortable:'true', initialWidth:120},
+    {label: 'Received', fieldName: 'receivedAmount', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Pledged', fieldName: 'pledgedAmountOutstanding', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Written Off', fieldName: 'lostAmount', type: 'currency',sortable:'true', initialWidth:120},
     {label: 'Gift Total', fieldName: 'oppAmount', type: 'currency',sortable:'true', initialWidth:120}
